@@ -1,0 +1,10 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i runghc
+#! nix-shell -p "ghc.withPackages (ps: [ ps.protolude ])"
+#! nix-shell -I nixpkgs="https://github.com/NixOS/nixpkgs/archive/16d475334409f7fa632929b2838421b4ffe34927.tar.gz"
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import Protolude
+main :: IO ()
+main = do
+  putText "Git Project Manager"
