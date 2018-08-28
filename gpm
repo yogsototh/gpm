@@ -4,14 +4,16 @@
 #! nix-shell -I nixpkgs="https://github.com/NixOS/nixpkgs/archive/16d475334409f7fa632929b2838421b4ffe34927.tar.gz"
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-import Protolude hiding (stdout)
+import Protolude hiding (stdout,(%))
 import Turtle
 
 main :: IO ()
 main = do
   echo "Git Project Manager"
-  debug "git branch gpm"
-  debug "git checkout gpm"
+  echo "create a new branch gpm (be sure the branch gpm doesn't already exists)"
+  debug "git checkout --orphan gpm"
+  echo "cleanup the branch"
+  debug "git rm --cached -r ."
   initIssues
   initDocs
 
@@ -20,37 +22,18 @@ debug cmd = do
   stdout $ inshell cmd empty
 
 initIssues :: IO ()
-initIssues = output "issues.org" issuesOrg
+initIssues = do
+  echo "* issue.org"
+  output "issues.org" (input ("templates" </> "issues.org"))
 
-issuesOrg :: Shell Line
-issuesOrg = select
-  [ "#+Title: Git Project Management Issues"
-  , "#+Author: Your Name <your email>"
-  , "#+TODO: TODO IN-PROGRESS | DONE CANCELED"
-  , "#+COLUMNS: %TODO %3PRIORITY %40ITEM(Task) %17Effort(Estimated Effort){:} %CLOCKSUM %8TAGS(TAG)"
-  , ""
-  , "* TODO Issues"
-  , "** DONE Write README file :doc:"
-  , "The goal is to write a text file with all informations about the project"
-  , ""
-  , "Dave: @Alex should I write a subtitle?"
-  , "Alex: @Dave I think you can"
-  , ""
-  , "** IN-PROGRESS Write Install section in README :doc:ops:"
-  , "Explain how to install the project"
-  , ""
-  , "** TODO Write Tutorial section in README :doc:"
-  , "Should contains a complete tutorial"
-  ]
+initDocs :: IO ()
+initDocs = do
+  echo "* wiki.org"
+  output "wiki.org" (input ("templates" </> "wiki.org"))
 
-initDocs = output "wiki.org" wikiOrg
-
-wikiOrg :: Shell Line
-wikiOrg = select
-  [ "#+Title: Git Project Management Wiki"
-  , "#+Author: Your Name <your email>"
-  , ""
-  , "* Wiki"
-  , ""
-  , "Write your documentation for dev only here"
-  ]
+initReview :: IO ()
+initReview = do
+  let fic = "reviews" </> "write-contributing-yogsototh.org"
+  mktree "reviews"
+  putText $ format ("* "%fp) fic
+  output fic (input ("templates" </> "review.org"))
