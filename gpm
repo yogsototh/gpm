@@ -24,16 +24,19 @@ debug cmd = do
 initIssues :: IO ()
 initIssues = do
   echo "* issue.org"
-  output "issues.org" (input ("templates" </> "issues.org"))
+  input ("templates" </> "issues.org")
+    & output "issues.org"
 
 initDocs :: IO ()
 initDocs = do
   echo "* wiki.org"
-  output "wiki.org" (input ("templates" </> "wiki.org"))
+  input ("templates" </> "wiki.org")
+    & output "wiki.org"
 
 initReview :: IO ()
 initReview = do
   let fic = "reviews" </> "write-contributing-yogsototh.org"
   mktree "reviews"
   putText $ format ("* "%fp) fic
-  output fic (input ("templates" </> "review.org"))
+  input ("templates" </> "review.org")
+    & output fic

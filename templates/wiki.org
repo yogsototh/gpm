@@ -1,0 +1,19 @@
+#+Title: Git Project Management Wiki
+#+Author: Your Name <your email>
+
+Put all documentation here.
+If the documentation start to grow too much.
+Do not hesitate to create directories and link those file in this
+main entry point.
+
+* Project
+
+** Description
+** Contribute
+*** Issues
+To write a new issue switch to the ~gpm~ branch and add it to ~issues.org~ file.
+*** Code Review
+To write a code review for the branch ~foo~ if you are the user ~johndoe~ simply create a
+file named ~reviews/foo-johndoe.org~ in the ~gpm~ branch.
+
+To help you write your review you should use [[https://orgmode.org/manual/Capture.html][org-capture]]

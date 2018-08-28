@@ -4,7 +4,9 @@
 #+PROPERTY: ASSIGNEE
 #+PROPERTY: REVIEWERS
 #+PROPERTY: BRANCH
-#+SEQ_TODO: REVIEW(r) FEEDBACK(f) TODO(t) STARTED(s) WAITING(w) | DONE(d) CANCELLED(c) DEFERRED(f)
+#+SEQ_TODO: FEEDBACK(f) TODO(t) STARTED(s) WAITING(w) LGTM(l) | DONE(d) CANCELLED(c) DEFERRED(f)
+#+SEQ_TODO: REVIEW(r) | MERGED(m) ABORTED(a)
+#+SEQ_TODO: ACCEPTED(l) CHANGE_REQUESTED(c) | REFUSED(r)
 #+COLUMNS: %38ITEM(Details) %TAGS(Context) %7TODO(To Do) %8ASSIGNEE %5Effort(Time){:}
 #+TAGS: bug(b) doc(d) ops(o)
 
@@ -23,23 +25,70 @@ And think about properties to manages meta datas such as:
 - branch (the branch asked for a review before merge)
 
 * Basic Usages
+
+The basic usage is to simply create the todo list. The reviewers could simply
+add sub items to provide remarks or even other todos.
+
 ** TODO Do thing 3
 ** STARTED Do thing 2
 ** DONE Do thing 1
+   CLOSED: [2018-08-28 Tue 22:37]
 
 * Issues
-** REVIEW Write a CONTRIBUTING file                                     :doc:
+
+If you use ~org-sort~ it will put the REVIEW task on top.
+Then FEEDBACK (when you simply need to ask questions).
+
+** REVIEW Basic review process
+   :PROPERTIES:
+   :BRANCH:   explain-review-process
+   :ASSIGNEE: yogsototh
+   :REVIEWERS: shubby
+   :END:
+
+So basically the reviewer should write his review here. As the reviewer should
+switch branch to the working branch the =issues.org= file won't be easy to
+reach.
+
+So it is up to the user to create a file =~/.reviews/<branch-name>-<reviewer>.org=
+The reviewer then will only need to write down its remarks.
+To make things easy you can link the files with their lines using
+=file:path/to/file:::NNN=.
+
+Once the review is finished. The reviewer simply need to:
+1. switch to the =gpm= branch
+2. copy the review file into the =reviews/= directory
+3. make a commit aboute the finished review.
+
+The contributor will then be able to copy the content of =reviews/= into
+=~/.reviews/=, switch to the branch to be merged, read the review, make fixes,
+add comment to the review files, etc...
+
+
+*** ACCEPTED Review finished
+    :PROPERTIES:
+    :REVIEWER: shubby
+    :END:
+
+Please change something
+
+edit: switched from CHANGE_REQUESTED to ACCEPTED!
+
+**** FEEDBACK Changed!
+
+** MERGED Write a CONTRIBUTING file                                     :doc:
+   CLOSED: [2018-08-28 Tue 22:51]
    :PROPERTIES:
    :BRANCH:   write-contributing
-   :ASSIGNEE: dave
+   :ASSIGNEE: shubby
    :REVIEWERS: yogsototh
    :END:
-*** FEEDBACK yogsototh's review 1
+*** ACCEPTED Advanced review workflow explained!
     :PROPERTIES:
     :REVIEWER: yogsototh
     :END:
 
-A simple way to write and read review is to use ~org-annotate-file~.
+A simple way to write and read review is to use ~org-capture~.
 It will create a file with links to the file your are inspecting in emacs
 without modifying the file.
 
@@ -49,7 +98,7 @@ A simple way to achieve this would be to create a reviews directory:
 Then in the next section
 Use =C-c C-c= to execute that and so you'll see all annotations.
 
-Mainly the reviewer only need to use ~org-annotate-file~ and put the result
+Mainly the reviewer only need to use ~org-capture~ and put the result
 in =reviews=.
 
 #+NAME: init-reviews
@@ -59,19 +108,53 @@ in =reviews=.
   (org-with-point-at org-babel-current-src-block-location
     (org-entry-get nil prop-name t)))
 
-(defun start-review ()
+(defun gen-review-file-name ()
   (let* ((branch (get-prop "BRANCH"))
          (reviewer (get-prop "REVIEWER"))
-         (review-file-name (concat branch "-" reviewer ".org"))
+         (review-file-name ))
+    (concat branch "-" reviewer ".org")))
+
+(defun start-review ()
+  "to be called at the beginning of the review"
+  (let* ((review-file-name (gen-review-file-name))
          (review-dir "~/.reviews/")
          (local-review (concat "file:../reviews/" review-file-name))
          (global-review (concat review-dir review-file-name)))
     (url-copy-file local-review global-review)
-    (setq org-annotate-file-storage-file global-review)))
+    (setq org-default-notes-file global-review)))
+
+(defun end-review ()
+  "to be call when the reviewer ends its review."
+  (let* ((review-file-name (gen-review-file-name))
+         (review-dir "~/.reviews/")
+         (local-review (concat "file:../reviews/" review-file-name))
+         (global-review (concat review-dir review-file-name)))
+    (url-copy-file global-review local-review)
+    (setq org-default-notes-file global-review)))
 #+END_SRC
+
+1. Start by using =C-c C-c= here.
+2. Switch to the issue branch.
+3. If you just want to read the review open the =(gen-review-file-name)=
+4. If you want to add a remark use =org-capture= to open the org file that will
+   contain your remarks with a link to the line and file.
+   I think to make it easier all member of the team should put their projects
+   in the same place. Typically =~/dev/project-name=.
+
+
+#+BEGIN_SRC elisp
+(concat "[[~/.reviews/" (gen-review-file-name) "]]")
+#+END_SRC
+
+#+RESULTS:
+: [[~/.reviews/write-contributing-yogsototh.org]]
 
 #+BEGIN_SRC elisp :results silent
 (start-review)
+#+END_SRC
+
+#+BEGIN_SRC elisp :results silent
+(end-review)
 #+END_SRC
 
 ** TODO [#B] Write a tutorial                                           :doc:
@@ -84,6 +167,6 @@ Explain how to install the project
 ** DONE Write README file                                               :doc:
 The goal is to write a text file with all informations about the project
 
-Dave: @Alex should I write a subtitle?
-Alex: @Dave I think you can"
+Shubby: @Alex should I write a subtitle?
+Alex: @Shubby I think you can"
 

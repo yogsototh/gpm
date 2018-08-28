@@ -3,6 +3,8 @@
 
 * Goal
 
+Principle: put project management info along the repository not in some DB.
+
 The goal is to have most features that github provide but using only text files
 and git.
 Typically solve the problem that github is fully centralized.
