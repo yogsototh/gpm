@@ -1,0 +1,89 @@
+#+Title: Git Project Management Issues
+#+Author: Your Name <your email>
+#+PROPERTY: Effort_ALL  0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00
+#+PROPERTY: ASSIGNEE
+#+PROPERTY: REVIEWERS
+#+PROPERTY: BRANCH
+#+SEQ_TODO: REVIEW(r) FEEDBACK(f) TODO(t) STARTED(s) WAITING(w) | DONE(d) CANCELLED(c) DEFERRED(f)
+#+COLUMNS: %38ITEM(Details) %TAGS(Context) %7TODO(To Do) %8ASSIGNEE %5Effort(Time){:}
+#+TAGS: bug(b) doc(d) ops(o)
+
+
+This is an example on how to organize the issues. The basic usage is quite
+simple, only use 3 status (todo, started, done)
+
+The second section "Issues" show a more advanced usage which once you're used to
+org-mode shouldn't be too hard to follow.
+Mainly the idea is simply to add tags and properties.
+You can use tags as github labels.
+And think about properties to manages meta datas such as:
+
+- Assignee (who is assignee to an issue)
+- Reviewers (who is asked for review)
+- branch (the branch asked for a review before merge)
+
+* Basic Usages
+** TODO Do thing 3
+** STARTED Do thing 2
+** DONE Do thing 1
+
+* Issues
+** REVIEW Write a CONTRIBUTING file                                     :doc:
+   :PROPERTIES:
+   :BRANCH:   write-contributing
+   :ASSIGNEE: dave
+   :REVIEWERS: yogsototh
+   :END:
+*** FEEDBACK yogsototh's review 1
+    :PROPERTIES:
+    :REVIEWER: yogsototh
+    :END:
+
+A simple way to write and read review is to use ~org-annotate-file~.
+It will create a file with links to the file your are inspecting in emacs
+without modifying the file.
+
+A simple way to achieve this would be to create a reviews directory:
+~mkdir ~/.reviews~
+
+Then in the next section
+Use =C-c C-c= to execute that and so you'll see all annotations.
+
+Mainly the reviewer only need to use ~org-annotate-file~ and put the result
+in =reviews=.
+
+#+NAME: init-reviews
+#+BEGIN_SRC emacs-lisp :results silent
+(require 'url)
+(defun get-prop (prop-name)
+  (org-with-point-at org-babel-current-src-block-location
+    (org-entry-get nil prop-name t)))
+
+(defun start-review ()
+  (let* ((branch (get-prop "BRANCH"))
+         (reviewer (get-prop "REVIEWER"))
+         (review-file-name (concat branch "-" reviewer ".org"))
+         (review-dir "~/.reviews/")
+         (local-review (concat "file:../reviews/" review-file-name))
+         (global-review (concat review-dir review-file-name)))
+    (url-copy-file local-review global-review)
+    (setq org-annotate-file-storage-file global-review)))
+#+END_SRC
+
+#+BEGIN_SRC elisp :results silent
+(start-review)
+#+END_SRC
+
+** TODO [#B] Write a tutorial                                           :doc:
+Should contains a complete tutorial
+** WAITING [#A] Write Install section in README                     :ops:doc:
+   :PROPERTIES:
+   :ASSIGNEE: yogsototh
+   :END:
+Explain how to install the project
+** DONE Write README file                                               :doc:
+The goal is to write a text file with all informations about the project
+
+Dave: @Alex should I write a subtitle?
+Alex: @Dave I think you can"
+

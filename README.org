@@ -1,0 +1,70 @@
+#+Title: Git Project Manager
+#+Author: Yann Esposito
+
+* Goal
+
+The goal is to have most features that github provide but using only text files
+and git.
+Typically solve the problem that github is fully centralized.
+
+- github centralized a lot of stuff which are metas infos out of your git
+  project:
+- have a unique URL to reference your project and be able to push your code to
+- issue tracker
+  - forum to discuss about issues
+- code review
+- ability to make pull requests
+- github pages
+- project/code discovery
+- identification and trust
+
+** What you gain
+
+- Perfectly self-hosted
+- private
+- keep history of meta infos about your projects (life of issues, etc...) in
+  your repository
+- text + git, no magic, if you don't want to use emacs with org-mode, just use
+  notepad it will be perfectly fine.
+- keep history of reviews inside your git repo
+- the meta history doesn't pollute the project history
+
+** What you lose
+
+- github login/identification
+- github discoverability. It is up to you to share your work on search engines.
+- you need to self host: you'll certainly need to buy a domain name, have a
+  server somewhere to host a git repo.
+
+So the goal is to prevent project management commits to cripple in the real
+project commits.
+For that, we simply use another branch that should be prevented to be merged
+by hooks.
+
+** Principle
+
+The principle is quite easy:
+
+1. create a =gpm= branch
+2. put all necessary stuff in here:
+   - issues list
+   - ability to make comment/review/organize based on =org-mode= files
+   - code review via =org-annotate-file=
+   - hooks to share with all contributors
+   - webserver to provide a webpage for your project
+   - webserver to serve you git project to the world with potential open Pull
+     requests.
+
+Great advantage of org-mode is that its simple flat text files.
+Anybody can edit it. Even the use of =org-annotate-file= is just something
+anyone can do manually quite easily, create a file with all your comments
+with links to the file (can also precise the line).
+Of course using emacs or vim-orgmode plugin might really help.
+
+** Why org-mode and not markdown?
+
+We don't use markdown because we can handle more complex workflow with orgmode.
+markdown wasn't created to deal with todo list, etc...
+Org-mode file can handle meta-datas, can be presented with columns, sorted,
+can provide agenda views, etc...
+

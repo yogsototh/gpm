@@ -1,0 +1,4 @@
+* [[file:src/Main.hs::27]]
+
+  Remove the direct usage of the file inside and prefer to load templates. If
+  possible compressed one.
