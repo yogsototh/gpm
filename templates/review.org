@@ -1,24 +1,9 @@
-* [[file:src/Main.hs::27]]
-
-  Remove the direct usage of the file inside and prefer to load templates. If
-  possible compressed one.
+* FEEDBACK 
   
-#+BEGIN_SRC elisp
-(org-remember-insinuate)
-(define-key global-map "\C-cr" 'org-remember)
-(setq org-remember-templates
-      '(("Code Review High" ?h "* TODO [#A] %?\n  %i\n  %a" "~/Review.org" "Issues")
-        ("Code Review Medium" ?m "* TODO [#B] %?\n  %i\n  %a" "~/Review.org" "Issues")
-        ("Code Review Low" ?l "* TODO [#C] %?\n  %i\n  %a" "~/Review.org" "Issues")
-        ("Code Review Question" ?? "* TODO %?\n  %i\n  %a" "~/Review.org" "Questions")))
-
-(defun my/linenum()
-  "Use line number as the file linking item"
-;; Optionally, predicate this technique to
-;; only certain modes
-;; e.g.
-;; (when (eq major-mode 'cperl-mode) ...
-  (number-to-string (org-current-line)))
-(add-hook 'org-create-file-search-functions
-          'my/linenum)
-#+END_SRC
+  [[file:~/y/gpm/gpm::initDocs]]
+* QUESTION What about creating a new branch for doc?
+  [[file:~/y/gpm/gpm::initDocs]]
+* FEEDBACK  something
+  [[file:~/y/gpm/gpm::mkNewEmptyBranch%20"gpm"]]
+* QUESTION some question
+  [[file:~/y/gpm/gpm::initDocs]]

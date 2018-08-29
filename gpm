@@ -4,19 +4,24 @@
 #! nix-shell -I nixpkgs="https://github.com/NixOS/nixpkgs/archive/16d475334409f7fa632929b2838421b4ffe34927.tar.gz"
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-import Protolude hiding (stdout,(%))
+import Protolude hiding (stdout)
 import Turtle
 
 main :: IO ()
 main = do
-  echo "Git Project Manager"
-  echo "create a new branch gpm (be sure the branch gpm doesn't already exists)"
-  debug "git checkout --orphan gpm"
-  echo "cleanup the branch"
-  debug "git rm --cached -r ."
+  echo "# <GPM> -- Git Project Manager"
+  mkNewEmptyBranch "gpm"
   initIssues
   initDocs
 
+mkNewEmptyBranch :: Text -> IO ()
+mkNewEmptyBranch br = do
+  echo "create a new branch "<> br <> " (be sure the branch " <> br <> " doesn't already exists)"
+  debug $ "git checkout --orphan " <> br
+  echo "cleanup the branch"
+  debug "git rm --cached -r ."
+
+debug :: Text -> IO ()
 debug cmd = do
   putText cmd
   stdout $ inshell cmd empty
