@@ -13,6 +13,8 @@ main = do
   mkNewEmptyBranch "gpm"
   initIssues
   initDocs
+  debug "git commit -m 'gpm initialized'"
+  debug "git checkout master"
 
 mkNewEmptyBranch :: Text -> IO ()
 mkNewEmptyBranch br = do
@@ -31,12 +33,14 @@ initIssues = do
   echo "* issue.org"
   input ("templates" </> "issues.org")
     & output "issues.org"
+  debug "git add issues.org"
 
 initDocs :: IO ()
 initDocs = do
   echo "* wiki.org"
   input ("templates" </> "wiki.org")
     & output "wiki.org"
+  debug "git add wiki.org"
 
 initReview :: IO ()
 initReview = do
@@ -45,3 +49,4 @@ initReview = do
   putText $ format ("* "%fp) fic
   input ("templates" </> "review.org")
     & output fic
+  debug "git add reviews"
