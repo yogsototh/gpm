@@ -43,15 +43,23 @@
          (review-dir "~/.reviews/")
          (local-review (concat "file:../reviews/" review-file-name))
          (global-review (concat review-dir review-file-name)))
-    (url-copy-file local-review global-review)
+    (if (file-exists-p local-review)
+        (url-copy-file local-review global-review)
+      (shell-command (concat "touch " global-review)))
     (setq org-capture-templates
-       `(("c" "Change requested" entry (file+headline global-review)
-            "* CHANGE_REQUESTED %?\n  %i\n  %a")
-         ("q" "question" entry (file+headline global-review)
-            "* QUESTION %?\n  %i\n  %a")
-         ("r" "refused" entry (file+headline global-review)
-            "* REFUSED %?\n  %i\n  %a")))
-   (setq org-default-notes-file global-review)))
+          (backquote (("f" "feedback"
+                       entry (file (lambda () ,global-review))
+                       "* FEEDBACK %?\n  %i\n  %a")
+                      ("q" "question"
+                       entry (file (lambda () ,global-review))
+                       "* QUESTION %?\n  %i\n  %a")
+                      ("c" "change requested"
+                       entry (file (lambda () ,global-review))
+                       "* CHANGE_REQUESTED %?\n  %i\n  %a")
+                      ("r" "refused"
+                       entry (file (lambda () ,global-review))
+                       "* REFUSED %?\n  %i\n  %a"))))
+    (setq org-default-notes-file global-review)))
 
 (defun end-review ()
   "to be call when the reviewer ends its review."
