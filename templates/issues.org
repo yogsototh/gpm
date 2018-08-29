@@ -4,12 +4,13 @@
 #+PROPERTY: ASSIGNEE
 #+PROPERTY: REVIEWERS
 #+PROPERTY: BRANCH
-#+SEQ_TODO: FEEDBACK(f) TODO(t) STARTED(s) WAITING(w) LGTM(l) | DONE(d) CANCELLED(c) DEFERRED(f)
-#+SEQ_TODO: REVIEW(r) | MERGED(m) ABORTED(a)
-#+SEQ_TODO: ACCEPTED(l) CHANGE_REQUESTED(c) | REFUSED(r)
+#+TODO: FEEDBACK(f) TODO(t) STARTED(s) WAITING(w) LGTM(l) | DONE(d) CANCELLED(c)
+#+TODO: REVIEW(r) | MERGED(m) ABORTED(a)
+#+TODO: ACCEPTED(l) CHANGE_REQUESTED(c) QUESTION(q) | REFUSED(r)
 #+COLUMNS: %38ITEM(Details) %TAGS(Context) %7TODO(To Do) %8ASSIGNEE %5Effort(Time){:}
 #+TAGS: bug(b) doc(d) ops(o)
-
+#+STARTUP: content
+#+STARTUP: latexpreview
 
 This is an example on how to organize the issues. The basic usage is quite
 simple, only use 3 status (todo, started, done)
@@ -103,34 +104,8 @@ in =reviews=.
 
 #+NAME: init-reviews
 #+BEGIN_SRC emacs-lisp :results silent
-(require 'url)
-(defun get-prop (prop-name)
-  (org-with-point-at org-babel-current-src-block-location
-    (org-entry-get nil prop-name t)))
-
-(defun gen-review-file-name ()
-  (let* ((branch (get-prop "BRANCH"))
-         (reviewer (get-prop "REVIEWER"))
-         (review-file-name ))
-    (concat branch "-" reviewer ".org")))
-
-(defun start-review ()
-  "to be called at the beginning of the review"
-  (let* ((review-file-name (gen-review-file-name))
-         (review-dir "~/.reviews/")
-         (local-review (concat "file:../reviews/" review-file-name))
-         (global-review (concat review-dir review-file-name)))
-    (url-copy-file local-review global-review)
-    (setq org-default-notes-file global-review)))
-
-(defun end-review ()
-  "to be call when the reviewer ends its review."
-  (let* ((review-file-name (gen-review-file-name))
-         (review-dir "~/.reviews/")
-         (local-review (concat "file:../reviews/" review-file-name))
-         (global-review (concat review-dir review-file-name)))
-    (url-copy-file global-review local-review)
-    (setq org-default-notes-file global-review)))
+;; (load "../gpm-review-0.0.1/gpm-review.el")
+(require 'gpm-review)
 #+END_SRC
 
 1. Start by using =C-c C-c= here.
