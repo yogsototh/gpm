@@ -4,7 +4,7 @@
 #! nix-shell -I nixpkgs="https://github.com/NixOS/nixpkgs/archive/16d475334409f7fa632929b2838421b4ffe34927.tar.gz"
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-import Protolude hiding (stdout,(%))
+import Protolude hiding (stdout)
 import Turtle
 
 main :: IO ()
@@ -19,6 +19,13 @@ main = do
 mkNewEmptyBranch :: Text -> IO ()
 mkNewEmptyBranch br = do
   putText $ "create a new branch " <> br <> " (be sure the branch " <> br <> " doesn't already exists)"
+  debug $ "git checkout --orphan " <> br
+  echo "cleanup the branch"
+  debug "git rm --cached -r ."
+
+mkNewEmptyBranch :: Text -> IO ()
+mkNewEmptyBranch br = do
+  echo "create a new branch "<> br <> " (be sure the branch " <> br <> " doesn't already exists)"
   debug $ "git checkout --orphan " <> br
   echo "cleanup the branch"
   debug "git rm --cached -r ."
