@@ -134,6 +134,7 @@ markdown wasn't created to deal with todo list, etc...
 Org-mode file can handle meta-datas, can be presented with columns, sorted,
 can provide agenda views, etc...
 
+
 * Why is this important?
   It is very important to put all those meta-data about your project inside the
   repository because:
