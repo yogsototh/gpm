@@ -1,14 +1,9 @@
 #+Title: Git Project Management Issues
 #+Author: Your Name <your email>
 #+PROPERTY: Effort_ALL  0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00
-#+PROPERTY: ASSIGNEE
-#+PROPERTY: REVIEWERS
-#+PROPERTY: BRANCH
-#+TODO: TODO(t) STARTED(s) WAITING(w) LGTM(l) | DONE(d) CANCELLED(c)
-#+TODO: REVIEW(r) | MERGED(m) ABORTED(a)
-#+TODO: ACCEPTED(l) CHANGE_REQUESTED(c) QUESTION(q) FEEDBACK(f) | REFUSED(r)
+#+TODO: TODO(t) STARTED(s) WAITING(w) | DONE(d) CANCELLED(c)
 #+COLUMNS: %38ITEM(Details) %TAGS(Context) %7TODO(To Do) %8ASSIGNEE %5Effort(Time){:}
-#+TAGS: bug(b) doc(d) ops(o)
+#+TAGS: bug(b) doc(d)
 #+STARTUP: content
 #+STARTUP: latexpreview
 
@@ -33,18 +28,26 @@ add sub items to provide remarks or even other todos.
 ** TODO Do thing 3
 ** STARTED Do thing 2
 ** DONE Do thing 1
-   CLOSED: [2018-08-28 Tue 22:37]
 
-* Issues
+* Complex Usage with Review
 
-If you use ~org-sort~ it will put the REVIEW task on top.
-Then FEEDBACK (when you simply need to ask questions).
+We will also use the basic but we also consider PR and their review.
+So we add a few informatiosn for org-mode typically
+we decalre common properties to be used.
 
-** REVIEW Basic review process
+#+PROPERTY: ASSIGNEE
+#+PROPERTY: REQUESTED_REVIEWERS
+#+PROPERTY: REVIEWER
+#+PROPERTY: BRANCH
+#+TODO: TO_REVIEW(i) | MERGED(m)
+# for Reviews
+#+TODO: ACCEPTED(a) CHANGE_REQUESTED(c) QUESTION(q) FEEDBACK(f) | REFUSED(r)
+
+** TO_REVIEW Basic review process
    :PROPERTIES:
    :BRANCH:   explain-review-process
    :ASSIGNEE: yogsototh
-   :REVIEWERS: shubby
+   :REQUESTED_REVIEWERS: shubby
    :END:
 
 So basically the reviewer should write his review here. As the reviewer should
@@ -82,7 +85,7 @@ edit: switched from CHANGE_REQUESTED to ACCEPTED!
    :PROPERTIES:
    :BRANCH:   write-contributing
    :ASSIGNEE: shubby
-   :REVIEWERS: yogsototh
+   :REQUESTED_REVIEWERS: yogsototh
    :END:
 *** ACCEPTED Advanced review workflow explained!
     :PROPERTIES:
@@ -134,7 +137,7 @@ in =reviews=.
 
 ** TODO [#B] Write a tutorial                                           :doc:
 Should contains a complete tutorial
-** WAITING [#A] Write Install section in README                     :ops:doc:
+** WAITING [#A] Write Install section in README                     :doc:ops:
    :PROPERTIES:
    :ASSIGNEE: yogsototh
    :END:
@@ -144,4 +147,52 @@ The goal is to write a text file with all informations about the project
 
 Shubby: @Alex should I write a subtitle?
 Alex: @Shubby I think you can"
+* Full Professional Usage
 
+Mainly think agile kanban/scrum with QA and Ops team
+So we need to think about 3 kind of issues. Epic, user story and task.
+
+# for Epics and User Stories
+#+TODO: TO_DESCRIBE(b) IN_PROGRESS(g) TEST(e) | DELIVERED(l)
+#+TAGS: epic(e) user_story(u) task(t) qa(q) ops(o)
+** if you are fan of scrum / kanban methodology                     :epic:
+   Write the detail of the epic. If you are working on writing the epic you
+   might put a TODO or WAITING or create
+*** Subtask 1 :user_story:
+    Describe the feature the user want and create all subtasks as well as a list
+    of tests tasks for QA team. If needed add some informations for the ops team
+    if they need to change something to deploy it correctly.
+**** TO_REVIEW technical task 1                                        :task:
+   :PROPERTIES:
+   :BRANCH:   tech-task-1
+   :ASSIGNEE: yogsototh
+   :REQUESTED_REVIEWERS: shubby
+   :END:
+Describe the technical task.
+**** MERGED technical task 2                                           :task:
+     CLOSED: [2018-08-30 Thu 12:54]
+   :PROPERTIES:
+   :BRANCH:   tech-task-1
+   :ASSIGNEE: yogsototh
+   :REQUESTED_REVIEWERS: shubby
+   :END:
+***** ACCEPTED Review finished
+      :PROPERTIES:
+      :REVIEWER: shubby
+      :END:
+
+**** REFUSED test by QA                                             :task:qa:
+     CLOSED: [2018-08-30 Thu 13:02]
+     Describe how to test. If something fail, describe which test is failing,
+     etc...
+
+I can't make it work! Please fix it please.
+
+**** TODO deploy a redis instance                                  :task:ops:
+*** Subtask 2 :user_story:
+**** TODO technical sub task 1                                         :task:
+**** TODO technical sub task 2                                         :task:
+**** TODO test by QA                                                :task:qa:
+     Describe how to test. If something fail, describe which test is failing,
+     etc...
+**** TODO add a new configuration value                            :task:ops:
