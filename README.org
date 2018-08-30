@@ -1,9 +1,73 @@
 #+Title: Git Project Manager
 #+Author: Yann Esposito
 
-* Goal
+*Principle: put project management info along the repository not in some DB.*
 
-Principle: put project management info along the repository not in some DB.
+* Git Project Manager
+
+Put a project management tool in git.
+
+In general each project in git also need a lot of meta data informations.
+Most of them related to project management:
+
+- issue tracker with underlying discussions
+- meta documentation about the project (a wiki for example)
+- code review discussions
+
+The current status is to use something like github/gitlab/gitea for that.
+But it means all infos aren't tracked inside your repository.
+So when someone clone your repo, he can't have access to all project management
+history.
+
+On the other hand, you don't want to cripple all your commit messages with
+thousands of small commit related to project management.
+
+An easy way to have best of both world is simply to create a branch
+dedicated to project management only.
+
+** Project Management Format
+
+As one goal is also to provide minimal friction I wouldn't advise to use
+tools that are DBs, even puting that info in a JSON file doesn't fit that
+constraint.
+
+So I advise to use plain text files.
+Still I would advise to use a kind of known format or something easy to parse.
+
+There are plenty of tools using TODO lists as plain text files:
+
+- use your own markdown format
+- https://taskell.app use a markdown
+- http://todotxt.org use a specific easy to parse format
+- https://orgmode.org use the org-mode format
+  - emacs
+  - vim vim-orgmode
+  - http://mooz.github.io/org-js/
+
+I encourage everybody to use org-mode. Because even if you prefer markdown
+syntax, org-mode was designed to handle todolist unlike markdown which was
+designed as a readable text format to write webpage, doc, etc...
+
+Using pandoc, it is easy to convert org-mode to any known format.
+But as emacs is more advanced you'll lose some meta informations in the process.
+
+I might try to explain that choice of org-mode more in detail.
+But know that it is easy to edit with any text editor, its just a bit
+different as compared to markdown.
+
+I was surprised to discover that with org-mode and plain text file you can
+go a very long way toward project management organisation:
+
+- issues, bug tracking, comments
+- handling with minimal firction code reviews
+- ability to integrate with any organization workflow you would like:
+  - basic trello
+  - scrum
+  - kanban
+  - professional kanban taking into account epic, user story writing, QA & Ops
+    team
+  Be my guest. I provide examples on how to achive this in the
+  [[file:templates/issues.org]]
 
 The goal is to have most features that github provide but using only text files
 and git.
@@ -70,3 +134,22 @@ markdown wasn't created to deal with todo list, etc...
 Org-mode file can handle meta-datas, can be presented with columns, sorted,
 can provide agenda views, etc...
 
+* Why is this important?
+  It is very important to put all those meta-data about your project inside the
+  repository because:
+- you are no more dependant on any 3rd party tool to manage your project
+- you can easily change how you host your git project
+- anyone with just a text editor can manage those tasks.
+
+* After that
+
+A goal is to complete the =gpm= tool with a few other one all isolated but which
+could all work together.
+
+- hook handling (so all your team member can share nice hooks, for example,
+  preformat commit messages, launch tests before publishing a pull request,
+  etc...)
+- minimal web interface to navigate your project files, commits, branches, etc...
+- identity handling so hand in hand with hook handle and web interface provide
+  the ability to manage how contributor can access your tool
+- 

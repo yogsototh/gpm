@@ -39,11 +39,11 @@ we decalre common properties to be used.
 #+PROPERTY: REQUESTED_REVIEWERS
 #+PROPERTY: REVIEWER
 #+PROPERTY: BRANCH
-#+TODO: TO_REVIEW(i) | MERGED(m)
+#+TODO: REVIEW(i) | MERGED(m)
 # for Reviews
 #+TODO: ACCEPTED(a) CHANGE_REQUESTED(c) QUESTION(q) FEEDBACK(f) | REFUSED(r)
 
-** TO_REVIEW Basic review process
+** REVIEW Basic review process
    :PROPERTIES:
    :BRANCH:   explain-review-process
    :ASSIGNEE: yogsototh
@@ -162,7 +162,7 @@ So we need to think about 3 kind of issues. Epic, user story and task.
     Describe the feature the user want and create all subtasks as well as a list
     of tests tasks for QA team. If needed add some informations for the ops team
     if they need to change something to deploy it correctly.
-**** TO_REVIEW technical task 1                                        :task:
+**** REVIEW technical task 1                                        :task:
    :PROPERTIES:
    :BRANCH:   tech-task-1
    :ASSIGNEE: yogsototh
