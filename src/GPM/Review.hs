@@ -14,10 +14,11 @@ data ReviewCommand = ReviewStart (Maybe Text)
                    deriving (Eq)
 
 parseReviewCmd :: Parser ReviewCommand
-parseReviewCmd = subcommand "accept" "Accept the merge" (pure ReviewAccept)
-                 <|> subcommand "feedback" "Provide a feedback" (pure ReviewFeedback)
-                 <|> subcommand "question" "Ask a question" (pure ReviewQuestion)
-                 <|> subcommand "reject" "Ask a question" (pure ReviewReject)
+parseReviewCmd =
+  subcommand "accept" "Accept the merge" (pure ReviewAccept)
+  <|> subcommand "feedback" "Provide a feedback" (pure ReviewFeedback)
+  <|> subcommand "question" "Ask a question" (pure ReviewQuestion)
+  <|> subcommand "reject" "Reject the merge" (pure ReviewReject)
 
 handleReview :: ReviewCommand -> IO ()
 handleReview (ReviewStart _br) = die "TODO"
