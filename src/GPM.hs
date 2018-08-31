@@ -1,19 +1,22 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
 module GPM
 where
 
-import Protolude hiding (stdout,(%),die)
-import Turtle
+import           Data.FileEmbed (embedStringFile)
+import           Protolude      hiding (die, stdout, (%))
+import           Turtle
 
-import GPM.Review (handleReview,ReviewCommand(..),parseReviewCmd)
+import           GPM.Review     (ReviewCommand (..), handleReview,
+                                 parseReviewCmd)
 
 gpm :: IO ()
 gpm = do
   subcmd <- options "Git Project Manager" parser
   case subcmd of
-   Init -> init
-   NewIssue -> newIssue
+   Init             -> init
+   NewIssue         -> newIssue
    Review reviewCmd -> handleReview reviewCmd
 
 data Command = Init
@@ -55,15 +58,13 @@ debug cmd = do
 initIssues :: IO ()
 initIssues = do
   echo "* issue.org"
-  input ("templates" </> "issues.org")
-    & output "issues.org"
+  output "issues.org" $(embedStringFile "templates/issues.org")
   debug "git add issues.org"
 
 initDocs :: IO ()
 initDocs = do
   echo "* wiki.org"
-  input ("templates" </> "wiki.org")
-    & output "wiki.org"
+  output "wiki.org" $(embedStringFile "templates/wiki.org")
   debug "git add wiki.org"
 
 initReview :: IO ()
@@ -71,6 +72,5 @@ initReview = do
   let fic = "reviews" </> "write-contributing-yogsototh.org"
   mktree "reviews"
   putText $ format ("* "%fp) fic
-  input ("templates" </> "review.org")
-    & output fic
+  output fic $(embedStringFile "templates/review.org")
   debug "git add reviews"

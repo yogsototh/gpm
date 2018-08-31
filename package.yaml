@@ -5,7 +5,7 @@ author: Yann Esposito
 maintainer: yann.esposito@gmail.com
 copyright: © 2017 Yann Esposito
 license: ISC
-url: https://gitlab.esy.fun/yogsototh/gpm
+homepage: https://gitlab.esy.fun/yogsototh/gpm
 default-extensions:
   - OverloadedStrings
   - NoImplicitPrelude
@@ -26,6 +26,7 @@ dependencies:
 - base >=4.8 && <5
 - protolude
 - turtle
+- file-embed
 library:
   source-dirs: src
 executables:

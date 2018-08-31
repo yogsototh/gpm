@@ -2,12 +2,13 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a686a36064ef8ecb9b6b995eff90b19c3c02223326995cc6f0ae33c7f7d699f5
+-- hash: 33fb8dc1910b29dc2948850dc3ab52f6a6c420a93c0113d1fc81076fcd555c3a
 
 name:           gpm
 version:        0.1.0.0
 category:       Test
 stability:      alpha (experimental)
+homepage:       https://gitlab.esy.fun/yogsototh/gpm
 author:         Yann Esposito
 maintainer:     yann.esposito@gmail.com
 copyright:      © 2017 Yann Esposito
@@ -30,6 +31,7 @@ library
   ghc-options: -O2 -Werror -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wnoncanonical-monad-instances
   build-depends:
       base >=4.8 && <5
+    , file-embed
     , protolude
     , turtle
   default-language: Haskell2010
@@ -44,6 +46,7 @@ executable gpm
   ghc-options: -O2 -Werror -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wnoncanonical-monad-instances -threaded -rtsopts -with-rtsopts=-N -optP-Wno-nonportable-include-path
   build-depends:
       base >=4.8 && <5
+    , file-embed
     , gpm
     , protolude
     , turtle
