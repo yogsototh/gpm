@@ -5,8 +5,10 @@ module GPM
 where
 
 import           Data.FileEmbed (embedStringFile)
-import           Protolude      hiding (die, stdout, (%))
+import           Protolude      hiding (die, stdout, (%),fold)
 import           Turtle
+import qualified Control.Foldl as Fold
+import Control.Exception.Base (bracket)
 
 import           GPM.Review     (ReviewCommand (..), handleReview,
                                  parseReviewCmd)
@@ -16,8 +18,8 @@ gpm = do
   subcmd <- options "Git Project Manager" parser
   case subcmd of
    Init             -> init
-   NewIssue         -> newIssue
-   Review reviewCmd -> handleReview reviewCmd
+   NewIssue         -> inGPM newIssue
+   Review reviewCmd -> inGPM (handleReview reviewCmd)
 
 data Command = Init
              | NewIssue
@@ -30,6 +32,21 @@ parser = subcommand "init" "Initialize gpm" (pure Init)
          <|> Review <$> subcommand "review"
                          "Review (use current branch by default)"
                          parseReviewCmd
+
+inGPM :: MonadIO io => IO a -> io ()
+inGPM actions = sh $ do
+  res <- fold (inshell "git rev-parse --abbrev-ref HEAD" empty) Fold.head
+  oldbr <- case res of
+    Nothing -> die "Cannot retrieve current branch"
+    Just br -> do
+           void $ inshell "git stash --all" empty
+           void $ inshell "git checkout gpm" empty
+           return br
+  liftIO $ bracket (return ())
+                   (const $ sh $ do
+                       void $ inshell ("git checkout " <> lineToText oldbr) empty
+                       void $ inshell "git stash pop" empty)
+                   (const actions)
 
 newIssue :: IO ()
 newIssue = die "TODO"

@@ -27,6 +27,7 @@ dependencies:
 - protolude
 - turtle
 - file-embed
+- foldl
 library:
   source-dirs: src
 executables:
