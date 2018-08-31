@@ -76,6 +76,8 @@ initIssues :: IO ()
 initIssues = do
   echo "* issue.org"
   output "issues.org" $(embedStringFile "templates/issues.org")
+  mktree "templates"
+  output ("templates" </> "new-issue.tpl") $(embedStringFile "templates/new-issue.tpl")
   debug "git add issues.org"
 
 initDocs :: IO ()

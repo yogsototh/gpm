@@ -68,7 +68,6 @@ The contributor will then be able to copy the content of =reviews/= into
 =~/.reviews/=, switch to the branch to be merged, read the review, make fixes,
 add comment to the review files, etc...
 
-
 *** ACCEPTED Review finished
     :PROPERTIES:
     :REVIEWER: shubby

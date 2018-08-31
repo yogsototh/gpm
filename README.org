@@ -134,6 +134,14 @@ markdown wasn't created to deal with todo list, etc...
 Org-mode file can handle meta-datas, can be presented with columns, sorted,
 can provide agenda views, etc...
 
+Org mode is a format that is extremely flexible and battle tested.
+It is text only, readable, easy to parse.
+
+It will adapt easily between the beginning and the end of your project life.
+Starting with only basic features (TODO / INPROGRESS / DONE)
+
+Then, priority, multiple users, tags, many meta infos by task.
+Task organized as tree of tasks and subtasks.
 
 * Why is this important?
   It is very important to put all those meta-data about your project inside the
