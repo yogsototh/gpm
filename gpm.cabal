@@ -1,0 +1,50 @@
+-- This file has been generated from package.yaml by hpack version 0.28.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: a686a36064ef8ecb9b6b995eff90b19c3c02223326995cc6f0ae33c7f7d699f5
+
+name:           gpm
+version:        0.1.0.0
+category:       Test
+stability:      alpha (experimental)
+author:         Yann Esposito
+maintainer:     yann.esposito@gmail.com
+copyright:      © 2017 Yann Esposito
+license:        ISC
+build-type:     Simple
+cabal-version:  >= 1.10
+extra-source-files:
+    README.org
+    stack.yaml
+
+library
+  exposed-modules:
+      GPM
+      GPM.Review
+  other-modules:
+      Paths_gpm
+  hs-source-dirs:
+      src
+  default-extensions: OverloadedStrings NoImplicitPrelude ScopedTypeVariables Strict
+  ghc-options: -O2 -Werror -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wnoncanonical-monad-instances
+  build-depends:
+      base >=4.8 && <5
+    , protolude
+    , turtle
+  default-language: Haskell2010
+
+executable gpm
+  main-is: Main.hs
+  other-modules:
+      Paths_gpm
+  hs-source-dirs:
+      src-exe
+  default-extensions: OverloadedStrings NoImplicitPrelude ScopedTypeVariables Strict
+  ghc-options: -O2 -Werror -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wnoncanonical-monad-instances -threaded -rtsopts -with-rtsopts=-N -optP-Wno-nonportable-include-path
+  build-depends:
+      base >=4.8 && <5
+    , gpm
+    , protolude
+    , turtle
+  default-language: Haskell2010

@@ -1,43 +1,35 @@
-#! /usr/bin/env nix-shell
-#! nix-shell -i runghc
-#! nix-shell -p "ghc.withPackages (ps: [ ps.protolude ps.turtle ])"
-#! nix-shell -I nixpkgs="https://github.com/NixOS/nixpkgs/archive/16d475334409f7fa632929b2838421b4ffe34927.tar.gz"
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+module GPM
+where
+
 import Protolude hiding (stdout,(%),die)
 import Turtle
 
-main :: IO ()
-main = do
-  x <- options "Git Project Manager" parser
-  case x of
+import GPM.Review (handleReview,ReviewCommand(..),parseReviewCmd)
+
+gpm :: IO ()
+gpm = do
+  subcmd <- options "Git Project Manager" parser
+  case subcmd of
    Init -> init
    NewIssue -> newIssue
-   StartReview br -> startReview br
-   EndReview br -> endReview br
+   Review reviewCmd -> handleReview reviewCmd
 
 data Command = Init
              | NewIssue
-             | StartReview (Maybe Text)
-             | EndReview (Maybe Text)
+             | Review ReviewCommand
              deriving (Eq)
 
 parser :: Parser Command
 parser = subcommand "init" "Initialize gpm" (pure Init)
          <|> subcommand "new-issue" "Create a new Issue" (pure NewIssue)
-         <|> StartReview <$> subcommand "start-review" "Start review (use current branch by default)"
-                             (optional (argText "branch" "The git branch to review"))
-         <|> EndReview   <$> subcommand "end-review" "End review (use current branch by default)"
-                             (optional (argText "branch" "The git branch to end review"))
+         <|> Review <$> subcommand "review"
+                         "Review (use current branch by default)"
+                         parseReviewCmd
 
 newIssue :: IO ()
 newIssue = die "TODO"
-
-startReview :: Maybe Text -> IO ()
-startReview br = die "TODO"
-
-endReview :: Maybe Text -> IO ()
-endReview br = die "TODO"
 
 init :: IO ()
 init = do

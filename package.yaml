@@ -1,0 +1,42 @@
+name: gpm
+version: '0.1.0.0'
+category: Test
+author: Yann Esposito
+maintainer: yann.esposito@gmail.com
+copyright: © 2017 Yann Esposito
+license: ISC
+url: https://gitlab.esy.fun/yogsototh/gpm
+default-extensions:
+  - OverloadedStrings
+  - NoImplicitPrelude
+  - ScopedTypeVariables
+  - Strict
+extra-source-files:
+- README.org
+- stack.yaml
+ghc-options:
+- -O2
+- -Werror
+- -Wall
+- -Wcompat
+- -Wincomplete-uni-patterns
+- -Wredundant-constraints
+- -Wnoncanonical-monad-instances
+dependencies:
+- base >=4.8 && <5
+- protolude
+- turtle
+library:
+  source-dirs: src
+executables:
+  gpm:
+    main: Main.hs
+    source-dirs: src-exe
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+      - -optP-Wno-nonportable-include-path
+    dependencies:
+      - gpm
+stability: alpha (experimental)
