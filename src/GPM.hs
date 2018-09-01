@@ -23,7 +23,7 @@ gpm = do
   subcmd <- options "Git Project Manager" parser
   case subcmd of
    Init             -> Init.init
-   NewIssue         -> inGPM Issue.newIssue
+   NewIssue         -> inGPM Issue.handleNewIssue
    Review reviewCmd -> inGPM (Review.handleReview reviewCmd)
 
 data Command = Init

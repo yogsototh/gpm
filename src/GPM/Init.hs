@@ -1,6 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell   #-}
 
 {-|
 module      : GPM.Init
@@ -15,7 +14,7 @@ where
 import           Protolude
 import           Turtle
 
-import           GPM.Helpers (debug)
+import           GPM.Helpers (debug_)
 import qualified GPM.Docs    as Docs
 import qualified GPM.Issue   as Issue
 import qualified GPM.Review  as Review
@@ -27,13 +26,13 @@ init = do
   Issue.init
   Docs.init
   Review.init
-  debug "git commit -m 'gpm initialized'"
-  debug "git checkout master"
+  debug_ "git commit -m 'gpm initialized'"
+  debug_ "git checkout master"
 
 mkNewEmptyBranch :: Text -> IO ()
 mkNewEmptyBranch br = do
   putText $ "create a new branch " <> br <> " (be sure the branch " <> br <> " doesn't already exists)"
-  debug $ "git checkout --orphan " <> br
+  debug_ $ "git checkout --orphan " <> br
   echo "cleanup the branch"
-  debug "git rm --cached -r ."
+  debug_ "git rm --cached -r ."
 

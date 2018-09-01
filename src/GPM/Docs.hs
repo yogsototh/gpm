@@ -16,10 +16,10 @@ import           Turtle
 
 import           Data.FileEmbed (embedStringFile)
 
-import           GPM.Helpers    (debug)
+import           GPM.Helpers    (debug_)
 
 init :: IO ()
 init = do
   echo "* wiki.org"
   output "wiki.org" $(embedStringFile "templates/wiki.org")
-  debug "git add wiki.org"
+  debug_ "git add wiki.org"

@@ -20,7 +20,7 @@ import           Protolude      hiding (die, (%))
 import           Turtle
 
 import           Data.FileEmbed (embedStringFile)
-import           GPM.Helpers    (debug)
+import           GPM.Helpers    (debug_)
 
 data ReviewCommand = ReviewStart (Maybe Text)
                    | ReviewStop (Maybe Text)
@@ -37,7 +37,7 @@ init = do
   mktree "reviews"
   putText $ format ("* "%fp) fic
   output fic $(embedStringFile "templates/review.org")
-  debug "git add reviews"
+  debug_ "git add reviews"
 
 
 parseReviewCmd :: Parser ReviewCommand

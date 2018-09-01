@@ -1,6 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell   #-}
 {-|
 module      : GPM.Helpers
 Description : GPM helper functions
@@ -8,32 +7,44 @@ License     : Public Domain
 Maintainer  : yann.esposito@gmail.com
 -}
 module GPM.Helpers
-  (debug,inGPM)
+  (debug,debug_,inGPM,getCurrentGitBranch,getGitUser)
 where
 
-import           Protolude     hiding (stdout,fold,die)
+import           Protolude     hiding (die)
 import           Turtle
 
 import qualified Control.Foldl as Fold
 
-debug :: Text -> IO ()
+-- | execute a shell script and return the last line as text
+-- but also log the command to the console to minimize surprise
+debug :: Text -> IO (Maybe Text)
 debug cmd = do
   putText cmd
-  stdout $ inshell cmd empty
+  fmap lineToText <$> _foldIO (inshell cmd empty) (Fold.generalize Fold.last)
+
+-- | execute a shell script without stdin and without handling output
+debug_ :: Text -> IO ()
+debug_ = void . debug
+
+getCurrentGitBranch :: IO (Maybe Text)
+getCurrentGitBranch = debug "git rev-parse --abbrev-ref HEAD"
+
+getGitUser :: IO (Maybe Text)
+getGitUser = debug "git config user.name"
 
 -- | Ensure actions occurs in the @gpm@ branch
 -- and returns to current branch with also all untracked files
-inGPM :: MonadIO io => IO a -> io ()
-inGPM actions = sh $ do
-  res <- fold (inshell "git rev-parse --abbrev-ref HEAD" empty) Fold.head
-  oldbr <- case res of
-    Nothing -> die "Cannot retrieve current branch"
-    Just br -> do
-           void $ inshell "git stash --all" empty
-           void $ inshell "git checkout gpm" empty
-           return br
-  liftIO $ bracket (return ())
-                   (const $ sh $ do
-                       void $ inshell ("git checkout " <> lineToText oldbr) empty
-                       void $ inshell "git stash pop" empty)
-                   (const actions)
+inGPM :: IO a -> IO a
+inGPM actions = bracket safeChangeBranch safeReturnBranch (const actions)
+  where
+    safeChangeBranch = do
+      res <- getCurrentGitBranch
+      case res of
+        Nothing -> die "Cannot retrieve current branch"
+        Just br -> do
+               debug_ "git stash --all"
+               debug_ "git checkout gpm"
+               return br
+    safeReturnBranch oldbr = do
+      debug_ ("git checkout " <> oldbr)
+      debug_ "git stash pop"
