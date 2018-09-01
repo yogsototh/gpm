@@ -29,6 +29,7 @@ dependencies:
 - file-embed
 - foldl
 - mustache
+- text
 library:
   source-dirs: src
 executables:

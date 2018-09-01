@@ -19,6 +19,7 @@ import qualified GPM.Docs    as Docs
 import qualified GPM.Issue   as Issue
 import qualified GPM.Review  as Review
 
+-- | Init a repository with a new empty branch named @gpm@
 init :: IO ()
 init = do
   echo "# <GPM> -- Git Project Manager"
@@ -29,6 +30,7 @@ init = do
   debug_ "git commit -m 'gpm initialized'"
   debug_ "git checkout master"
 
+-- | Create a new empty branch, fail if the branch already exists
 mkNewEmptyBranch :: Text -> IO ()
 mkNewEmptyBranch br = do
   putText $ "create a new branch " <> br <> " (be sure the branch " <> br <> " doesn't already exists)"

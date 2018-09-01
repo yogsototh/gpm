@@ -22,18 +22,19 @@ gpm :: IO ()
 gpm = do
   subcmd <- options "Git Project Manager" parser
   case subcmd of
-   Init             -> Init.init
-   NewIssue         -> inGPM Issue.handleNewIssue
-   Review reviewCmd -> inGPM (Review.handleReview reviewCmd)
+   Init              -> Init.init
+   NewIssue issueOpt -> inGPM (Issue.handleNewIssue issueOpt)
+   Review reviewCmd  -> inGPM (Review.handleReview reviewCmd)
 
 data Command = Init
-             | NewIssue
+             | NewIssue Issue.IssueOptions
              | Review Review.ReviewCommand
-             deriving (Eq)
 
 parser :: Parser Command
 parser = subcommand "init" "Initialize gpm" (pure Init)
-         <|> subcommand "new-issue" "Create a new Issue" (pure NewIssue)
+         <|> NewIssue <$> subcommand "new-issue"
+                                     "Create a new Issue"
+                                     Issue.parseIssueOptions
          <|> Review <$> subcommand "review"
                          "Review (use current branch by default)"
                          Review.parseReviewCmd
