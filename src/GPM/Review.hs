@@ -1,9 +1,26 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module GPM.Review where
+{-# LANGUAGE TemplateHaskell   #-}
 
-import Protolude hiding (stdout,die)
-import Turtle
+{-|
+module      : GPM.Review
+Description : GPM review related commands
+License     : Public Domain
+Maintainer  : yann.esposito@gmail.com
+-}
+module GPM.Review
+  ( init
+  , parseReviewCmd
+  , handleReview
+  , ReviewCommand(..)
+  )
+where
+
+import           Protolude      hiding (die, (%))
+import           Turtle
+
+import           Data.FileEmbed (embedStringFile)
+import           GPM.Helpers    (debug)
 
 data ReviewCommand = ReviewStart (Maybe Text)
                    | ReviewStop (Maybe Text)
@@ -12,6 +29,16 @@ data ReviewCommand = ReviewStart (Maybe Text)
                    | ReviewQuestion
                    | ReviewReject
                    deriving (Eq)
+
+-- | init gpm branch to handle reviews
+init :: IO ()
+init = do
+  let fic = "reviews" </> "write-contributing-yogsototh.org"
+  mktree "reviews"
+  putText $ format ("* "%fp) fic
+  output fic $(embedStringFile "templates/review.org")
+  debug "git add reviews"
+
 
 parseReviewCmd :: Parser ReviewCommand
 parseReviewCmd =

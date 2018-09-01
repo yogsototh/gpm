@@ -28,6 +28,7 @@ dependencies:
 - turtle
 - file-embed
 - foldl
+- mustache
 library:
   source-dirs: src
 executables:

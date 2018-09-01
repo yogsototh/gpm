@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c6d39ec4e6cb0558da69c75830e9471b116c0dfabc6cdbaaefa819cea92298b1
+-- hash: f13ce9cfb72ed8d7e916b9e6cf99111cfd7fbe4bc5083fb018698023360414db
 
 name:           gpm
 version:        0.1.0.0
@@ -22,6 +22,10 @@ extra-source-files:
 library
   exposed-modules:
       GPM
+      GPM.Docs
+      GPM.Helpers
+      GPM.Init
+      GPM.Issue
       GPM.Review
   other-modules:
       Paths_gpm
@@ -33,6 +37,7 @@ library
       base >=4.8 && <5
     , file-embed
     , foldl
+    , mustache
     , protolude
     , turtle
   default-language: Haskell2010
@@ -50,6 +55,7 @@ executable gpm
     , file-embed
     , foldl
     , gpm
+    , mustache
     , protolude
     , turtle
   default-language: Haskell2010
