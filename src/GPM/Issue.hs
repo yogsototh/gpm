@@ -23,8 +23,9 @@ import           Turtle
 
 import           Data.FileEmbed (embedStringFile)
 import qualified Data.Text      as T
-import           GPM.Helpers
 import           Text.Mustache
+
+import           GPM.Helpers
 
 data IssueOptions = IssueOptions
                     { interactive :: Bool
@@ -121,17 +122,32 @@ handleNewIssue opts = do
   validTmpNewIssue
 
 interactiveNewIssue :: NewIssue -> IO NewIssue
-interactiveNewIssue _ =
-  NewIssue <$> (fromMaybe PriorityB <$> ask "priority" "ex: A,B,C" toPriority)
-    <*> (fromMaybe "TODO" <$> ask "status" "ex: TODO, QUESTION" identity)
-    <*> (fromMaybe "Issue title" <$> ask "title" "Short Description" identity)
-    <*> ask "user" "your nick" identity
-    <*> ask "branch" "related branch" identity
-    <*> (fromMaybe [] <$> ask "tags" "comma separated tags" (T.splitOn ","))
-    <*> ask "assignee" "a single nick" identity
-    <*> (fromMaybe [] <$> ask "reviewers" "comma separated nicks" (T.splitOn ","))
-    <*> ask "description" "the long description" identity
+interactiveNewIssue ni =
+  NewIssue
+    <$> (fromMaybe (priority ni)
+          <$> ask "priority" (ptot (priority ni)) toPriority)
+    <*> (fromMaybe (status ni)
+         <$> ask "status" (status ni) identity)
+    <*> (fromMaybe (title ni)
+         <$> ask "title" (title ni) identity)
+    <*> (maybe (user ni) Just
+         <$>
+         ask "user" (fromMaybe "your name" (user ni)) identity)
+    <*> (maybe (branch ni) Just
+         <$> ask "branch" (fromMaybe "related branch" (branch ni)) identity)
+    <*> (fromMaybe (tags ni)
+         <$> ask "tags" "comma separated tags" (T.splitOn ","))
+    <*> (maybe (assignee ni) Just
+         <$> ask "assignee" "a single nick" identity)
+    <*> (fromMaybe (tags ni)
+         <$> ask "reviewers" "comma separated nicks" (T.splitOn ","))
+    <*> (maybe (description ni) Just
+         <$> ask "description" "the long description" identity)
   where
+    ptot :: Priority -> Text
+    ptot PriorityA = "A"
+    ptot PriorityB = "B"
+    ptot PriorityC = "C"
     ask :: Text -> Text -> (Text -> a) -> IO (Maybe a)
     ask field ex tr = do
       putText $ "Please enter " <> field <> "("<> ex <>"): "
