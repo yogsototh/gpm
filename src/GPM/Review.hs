@@ -36,7 +36,7 @@ init = do
   let fic = "reviews" </> "write-contributing-yogsototh.org"
   mktree "reviews"
   putText $ format ("* "%fp) fic
-  output fic $(embedStringFile "templates/review.org")
+  writeFile (toS (format fp fic)) $(embedStringFile "templates/review.org")
   debug_ "git add reviews"
 
 

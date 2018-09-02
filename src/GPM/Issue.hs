@@ -172,5 +172,9 @@ gatherNewIssueInfos iss = do
 init :: IO ()
 init = do
   echo "* issue.org"
-  output "issues.org" $(embedStringFile "templates/issues.org")
+  writeFile "issues.org" $(embedStringFile "templates/issues.org")
+  debug_ "git add issues.org"
+  mktree "templates"
+  writeFile "templates/new-issue.org" $(embedStringFile "templates/new-issue.org")
+  debug_ "git add templates"
 

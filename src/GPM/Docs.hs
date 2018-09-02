@@ -21,5 +21,5 @@ import           GPM.Helpers    (debug_)
 init :: IO ()
 init = do
   echo "* wiki.org"
-  output "wiki.org" $(embedStringFile "templates/wiki.org")
+  writeFile "wiki.org" $(embedStringFile "templates/wiki.org")
   debug_ "git add wiki.org"
