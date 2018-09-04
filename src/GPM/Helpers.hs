@@ -34,8 +34,8 @@ getGitUser = debug "git config user.name"
 
 -- | Ensure actions occurs in the @gpm@ branch
 -- and returns to current branch with also all untracked files
-inGPM :: IO a -> IO a
-inGPM actions = bracket safeChangeBranch safeReturnBranch (const actions)
+inGPM :: (Text -> IO a) -> IO a
+inGPM = bracket safeChangeBranch safeReturnBranch
   where
     safeChangeBranch = do
       res <- getCurrentGitBranch

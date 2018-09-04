@@ -112,9 +112,9 @@ createTmpNewIssue ni = do
       die "Parse ERROR, check your template ./templates/new-issue.org"
     Right compiled -> writeFile ".issues.org.tmp" (substitute compiled ni)
 
-handleNewIssue :: IssueOptions -> IO ()
-handleNewIssue opts = do
-  newIssueTmp <- gatherNewIssueInfos (newIssue opts)
+handleNewIssue :: IssueOptions -> Text -> IO ()
+handleNewIssue opts br = do
+  newIssueTmp <- gatherNewIssueInfos (newIssue opts) br
   newIssue <- if interactive opts
               then interactiveNewIssue newIssueTmp
               else return newIssueTmp
@@ -158,13 +158,13 @@ validTmpNewIssue = do
   tmpIssue <- readFile ".issues.org.tmp"
   appendFile "issues.org" ("\n\n" <> tmpIssue)
 
-gatherNewIssueInfos :: NewIssue -> IO NewIssue
-gatherNewIssueInfos iss = do
+gatherNewIssueInfos :: NewIssue -> Text -> IO NewIssue
+gatherNewIssueInfos iss br = do
   user <- if isNothing (user iss)
           then getGitUser
           else return (user iss)
   branch <- if isNothing (branch iss)
-            then getCurrentGitBranch
+            then return (Just br)
             else return (branch iss)
   return $ iss { user   = user
                , branch = branch }

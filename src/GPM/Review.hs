@@ -47,10 +47,10 @@ parseReviewCmd =
   <|> subcommand "question" "Ask a question" (pure ReviewQuestion)
   <|> subcommand "reject" "Reject the merge" (pure ReviewReject)
 
-handleReview :: ReviewCommand -> IO ()
-handleReview (ReviewStart _br) = die "TODO"
-handleReview (ReviewStop _br ) = die "TODO"
-handleReview ReviewAccept      = die "TODO"
-handleReview ReviewFeedback    = die "TODO"
-handleReview ReviewQuestion    = die "TODO"
-handleReview ReviewReject      = die "TODO"
+handleReview :: ReviewCommand -> Text -> IO ()
+handleReview (ReviewStart _br) _ = die "TODO"
+handleReview (ReviewStop _br ) _ = die "TODO"
+handleReview ReviewAccept      _ = die "TODO"
+handleReview ReviewFeedback    _ = die "TODO"
+handleReview ReviewQuestion    _ = die "TODO"
+handleReview ReviewReject      _ = die "TODO"
