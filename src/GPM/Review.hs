@@ -24,6 +24,8 @@ import           Turtle
 import           Data.FileEmbed (embedStringFile)
 import           GPM.Helpers    (getGPMCacheDir, debug_, getGitUser)
 import           Text.Mustache
+import qualified Data.Text as Text
+import qualified Data.Char as Char
 
 data ReviewCommand = ReviewStart ReviewOptions
                    | ReviewCommit
@@ -75,7 +77,7 @@ parseReviewCmd =
   <|> subcommand "feedback" "Provide a feedback" (pure ReviewFeedback)
   <|> subcommand "question" "Ask a question" (pure ReviewQuestion)
   <|> subcommand "reject" "Reject the merge" (pure ReviewReject)
-  <|> subcommand "start" "Create a new review" (ReviewStart <$> parseReviewOptions)
+  <|> subcommand "start" "Start a new review" (ReviewStart <$> parseReviewOptions)
   <|> subcommand "end" "End a review" (pure ReviewCommit)
 
 
@@ -97,17 +99,21 @@ handleReview (ReviewStart opts) br = do
                then interactiveNewReview newReviewTmp
                else return newReviewTmp
   createTmpNewReview newReview
-handleReview ReviewCommit   _ = validTmpNewReview
+handleReview ReviewCommit   br = validTmpNewReview br
 handleReview ReviewAccept   _ = die "TODO"
 handleReview ReviewFeedback _ = die "TODO"
 handleReview ReviewQuestion _ = die "TODO"
 handleReview ReviewReject   _ = die "TODO"
 
-validTmpNewReview :: IO ()
-validTmpNewReview = do
-  tmpReviewFile <- getTmpReviewFile
+protectStr :: Text -> Text
+protectStr =
+  Text.map (\c -> if Char.isAscii c then c else '-')
+
+validTmpNewReview :: Text -> IO ()
+validTmpNewReview br = do
+  tmpReviewFile <- getTmpReviewFile br
   tmpIssue <- readFile (toS (format fp tmpReviewFile))
-  appendFile "issues.org" ("\n\n" <> tmpIssue)
+  appendFile ("review-" <> toS (protectStr br) <> ".org") ("\n\n" <> tmpIssue)
 
 data NewReview =
   NewReview { status      :: Text
@@ -130,10 +136,11 @@ instance ToMustache NewReview where
     , "description" ~> description
     ]
 
-getTmpReviewFile :: IO Turtle.FilePath
-getTmpReviewFile = do
+getTmpReviewFile :: Text -> IO Turtle.FilePath
+getTmpReviewFile br = do
   cacheDir <- getGPMCacheDir
-  return $ cacheDir </> "review-feedback.org"
+  let reviewFilename = "review-" <> protectStr br <> ".org"
+  return $ cacheDir </> fromString (toS reviewFilename)
 
 createTmpNewReview :: NewReview -> IO ()
 createTmpNewReview nr = do
@@ -143,7 +150,7 @@ createTmpNewReview nr = do
       print pe
       die "Parse ERROR, check your template ./templates/new-review.org"
     Right compiled -> do
-      reviewName <- getTmpReviewFile
+      reviewName <- getTmpReviewFile (fromMaybe "no-name" (branch nr))
       writeFile (toS (format fp reviewName)) (substitute compiled nr)
 
 interactiveNewReview :: NewReview -> IO NewReview
