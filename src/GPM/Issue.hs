@@ -18,7 +18,7 @@ module GPM.Issue
   )
 where
 
-import           Protolude      hiding (ask,die)
+import           Protolude      hiding (ask, die)
 import           Turtle
 
 import           Data.FileEmbed (embedStringFile)

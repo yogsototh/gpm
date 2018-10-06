@@ -7,13 +7,19 @@ License     : Public Domain
 Maintainer  : yann.esposito@gmail.com
 -}
 module GPM.Helpers
-  (debug,debug_,inGPM,getCurrentGitBranch,getGitUser)
+  ( debug
+  , debug_
+  , getCurrentGitBranch
+  , getGPMCacheDir
+  , getGitUser
+  , inGPM
+  )
 where
 
-import           Protolude     hiding (die)
+import qualified Control.Foldl    as Fold
+import           Protolude        hiding (die)
+import qualified System.Directory as Directory
 import           Turtle
-
-import qualified Control.Foldl as Fold
 
 -- | execute a shell script and return the last line as text
 -- but also log the command to the console to minimize surprise
@@ -48,3 +54,8 @@ inGPM = bracket safeChangeBranch safeReturnBranch
     safeReturnBranch oldbr = do
       debug_ ("git checkout " <> oldbr)
       debug_ "git stash pop"
+
+-- | Retrieve the cache directory to save temporary files in gpm
+getGPMCacheDir :: IO Turtle.FilePath
+getGPMCacheDir = fromString <$> Directory.getXdgDirectory Directory.XdgCache "gpm"
+

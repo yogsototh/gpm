@@ -161,4 +161,36 @@ could all work together.
 - minimal web interface to navigate your project files, commits, branches, etc...
 - identity handling so hand in hand with hook handle and web interface provide
   the ability to manage how contributor can access your tool
-- 
+
+** Identfy users, allow access and trust them
+
+With this system it will be more about a pull from other than wait for them to push.
+The identity system should be decentralized and based on GPG keys.
+
+Mainly each user should sign their commit with their GPG key.
+Each user could then keep serving their local repo (see instaweb).
+
+And more importantly, there will be "known" repositories, known packages and libraries.
+It will be enough to sign all those activities and to publish them on some page automatically.
+Or to search for the fingerprint of the GPG on the web via a search engine.
+You'll then see all the activities related to that key.
+
+Typically:
+- OSS contributions
+- web blog articles
+- micro blog messages
+- comments
+- etc...
+
+One great advantage of that, is that each user will be able to manage different
+GPG key pairs for dealing with different aspect of their lives.
+
+This solution won't need common consensus network à la bitcoin, or any
+decentralized smart contract system. And from my point of view, this is a lot
+better. Because most of those decentralized system want you to adopt their
+centralized system, their software, their ecosystem. While just providing a
+website with a list of links where the user could simply grab them and check all
+link correspond to a signed activies is clearly totally open source compliant
+and does not require any software choice on any parties. This is yet again, just
+a text file somewhere and a simple web service. With minimal tooling that could
+be coded in any language in not much time.
