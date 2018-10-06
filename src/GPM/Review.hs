@@ -29,10 +29,11 @@ import qualified Data.Char as Char
 
 data ReviewCommand = ReviewStart ReviewOptions
                    | ReviewCommit
-                   | ReviewAccept
-                   | ReviewFeedback
-                   | ReviewQuestion
-                   | ReviewReject
+                   | ReviewAccept ReviewOptions
+                   | ReviewChangeRequest ReviewOptions
+                   | ReviewFeedback ReviewOptions
+                   | ReviewQuestion ReviewOptions
+                   | ReviewReject ReviewOptions
                    deriving (Eq)
 
 -- | init gpm branch to handle reviews
@@ -50,14 +51,20 @@ data ReviewOptions = ReviewOptions
                     , newReview    :: NewReview
                     } deriving (Eq)
 
-parseReviewOptions :: Parser ReviewOptions
-parseReviewOptions = ReviewOptions
-                    <$> switch "interactive" 'i' "Interactive mode"
-                    <*> parseNewReview
+parseFullReviewOptions :: Parser ReviewOptions
+parseFullReviewOptions =
+  ReviewOptions
+  <$> switch "interactive" 'i' "Interactive mode"
+  <*> parseFullNewReview
 
+parsePartialReviewOptions :: Text -> Parser ReviewOptions
+parsePartialReviewOptions status =
+  ReviewOptions
+  <$> switch "interactive" 'i' "Interactive mode"
+  <*> parsePartialNewReview status
 
-parseNewReview :: Parser NewReview
-parseNewReview = do
+parseFullNewReview :: Parser NewReview
+parseFullNewReview = do
   nrStatus      <- optional $ optText "status"    's' "The status of the review (TODO, QUESTION, ...)"
   nrTitle       <- optional $ optText "title"     't' "The status title"
   nrUser        <- optional $ optText "creator"   'c' "The user that created the review"
@@ -71,14 +78,36 @@ parseNewReview = do
                  , description = nrDescription
                  }
 
+parsePartialNewReview :: Text -> Parser NewReview
+parsePartialNewReview status = do
+  nrTitle       <- optional $ optText "title"     't' "The status title"
+  nrUser        <- optional $ optText "creator"   'c' "The user that created the review"
+  nrBranch      <- optional $ optText "branch"    'b' "The branch related to the review"
+  nrDescription <- optional $ optText "descr"     'd' "Long review description"
+  pure NewReview { status = status
+                 , title  = fromMaybe "Review Title" nrTitle
+                 , user        = nrUser
+                 , branch      = nrBranch
+                 , reviewer    = nrUser
+                 , description = nrDescription
+                 }
+
 parseReviewCmd :: Parser ReviewCommand
 parseReviewCmd =
-  subcommand "accept" "Accept the merge" (pure ReviewAccept)
-  <|> subcommand "feedback" "Provide a feedback" (pure ReviewFeedback)
-  <|> subcommand "question" "Ask a question" (pure ReviewQuestion)
-  <|> subcommand "reject" "Reject the merge" (pure ReviewReject)
-  <|> subcommand "start" "Start a new review" (ReviewStart <$> parseReviewOptions)
-  <|> subcommand "end" "End a review" (pure ReviewCommit)
+  subcommand "accept" "Accept the merge"
+  (ReviewAccept <$> parsePartialReviewOptions "ACCEPTED")
+  <|> subcommand "feedback" "Provide a feedback"
+  (ReviewFeedback <$> parsePartialReviewOptions "FEEDBACK")
+  <|> subcommand "question" "Ask a question"
+  (ReviewQuestion <$> parsePartialReviewOptions "QUESTION")
+  <|> subcommand "request-change" "Request some Changes to merge"
+  (ReviewChangeRequest <$> parsePartialReviewOptions "CHANGE_REQUESTED")
+  <|> subcommand "reject" "Reject the merge"
+  (ReviewReject <$> parsePartialReviewOptions "REFUSED")
+  <|> subcommand "start" "Start a new review"
+  (ReviewStart <$> parseFullReviewOptions)
+  <|> subcommand "end" "End a review"
+  (pure ReviewCommit)
 
 
 gatherNewReviewInfos :: NewReview -> Text -> IO NewReview
@@ -92,18 +121,32 @@ gatherNewReviewInfos iss br = do
   return $ iss { user   = user
                , branch = branch }
 
-handleReview :: ReviewCommand -> Text -> IO ()
-handleReview (ReviewStart opts) br = do
+handleNewReview :: ReviewOptions -> Text -> IO ()
+handleNewReview opts br = do
   newReviewTmp <- gatherNewReviewInfos (newReview opts) br
   newReview <- if interactive opts
                then interactiveNewReview newReviewTmp
                else return newReviewTmp
   createTmpNewReview newReview
-handleReview ReviewCommit   br = validTmpNewReview br
-handleReview ReviewAccept   _ = die "TODO"
-handleReview ReviewFeedback _ = die "TODO"
-handleReview ReviewQuestion _ = die "TODO"
-handleReview ReviewReject   _ = die "TODO"
+
+setStatus :: ReviewOptions -> Text -> ReviewOptions
+setStatus ro status = ro { newReview =  (newReview ro) { status = status } }
+
+handleReview :: ReviewCommand -> Text -> IO ()
+handleReview (ReviewStart opts)    br =
+  handleNewReview opts br
+handleReview ReviewCommit          br =
+  validTmpNewReview br
+handleReview (ReviewAccept opts)   br =
+  handleNewReview (setStatus opts "ACCEPTED") br
+handleReview (ReviewFeedback opts) br =
+  handleNewReview (setStatus opts "FEEDBACK") br
+handleReview (ReviewQuestion opts) br =
+  handleNewReview (setStatus opts "QUESTION") br
+handleReview (ReviewChangeRequest opts)   br =
+  handleNewReview (setStatus opts "CHANGE_REQUESTED") br
+handleReview (ReviewReject opts)   br =
+  handleNewReview (setStatus opts "REJECTED") br
 
 protectStr :: Text -> Text
 protectStr =
