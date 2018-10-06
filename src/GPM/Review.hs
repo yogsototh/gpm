@@ -45,6 +45,9 @@ init = do
   putText $ format ("* "%fp) fic
   writeFile (toS (format fp fic)) $(embedStringFile "templates/review.org")
   debug_ "git add reviews"
+  mktree "templates"
+  writeFile "templates/new-review.org" $(embedStringFile "templates/new-review.org")
+  debug_ "git add templates"
 
 
 data ReviewOptions = ReviewOptions
