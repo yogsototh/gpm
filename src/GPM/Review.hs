@@ -26,6 +26,7 @@ import           GPM.Helpers    (getGPMCacheDir, debug_, getGitUser)
 import           Text.Mustache
 import qualified Data.Text as Text
 import qualified Data.Char as Char
+import qualified System.Directory as Directory
 
 data ReviewCommand = ReviewStart ReviewOptions
                    | ReviewCommit
@@ -57,12 +58,6 @@ parseFullReviewOptions =
   <$> switch "interactive" 'i' "Interactive mode"
   <*> parseFullNewReview
 
-parsePartialReviewOptions :: Text -> Parser ReviewOptions
-parsePartialReviewOptions status =
-  ReviewOptions
-  <$> switch "interactive" 'i' "Interactive mode"
-  <*> parsePartialNewReview status
-
 parseFullNewReview :: Parser NewReview
 parseFullNewReview = do
   nrStatus      <- optional $ optText "status"    's' "The status of the review (TODO, QUESTION, ...)"
@@ -77,6 +72,12 @@ parseFullNewReview = do
                  , reviewer    = nrUser
                  , description = nrDescription
                  }
+
+parsePartialReviewOptions :: Text -> Parser ReviewOptions
+parsePartialReviewOptions status =
+  ReviewOptions
+  <$> switch "interactive" 'i' "Interactive mode"
+  <*> parsePartialNewReview status
 
 parsePartialNewReview :: Text -> Parser NewReview
 parsePartialNewReview status = do
@@ -155,8 +156,11 @@ protectStr =
 validTmpNewReview :: Text -> IO ()
 validTmpNewReview br = do
   tmpReviewFile <- getTmpReviewFile br
-  tmpIssue <- readFile (toS (format fp tmpReviewFile))
-  appendFile ("review-" <> toS (protectStr br) <> ".org") ("\n\n" <> tmpIssue)
+  tmpReview <- readFile (toS (format fp tmpReviewFile))
+  Directory.createDirectoryIfMissing True "reviews"
+  let dstReview = "reviews" </>
+         fromString (toS ("review-" <> protectStr br <> ".org"))
+  appendFile (toS (format fp dstReview)) ("\n\n" <> tmpReview)
 
 data NewReview =
   NewReview { status      :: Text
@@ -194,7 +198,9 @@ createTmpNewReview nr = do
       die "Parse ERROR, check your template ./templates/new-review.org"
     Right compiled -> do
       reviewName <- getTmpReviewFile (fromMaybe "no-name" (branch nr))
-      writeFile (toS (format fp reviewName)) (substitute compiled nr)
+      let tmpReviewFilename = format fp reviewName
+      writeFile (toS tmpReviewFilename) (substitute compiled nr)
+      putText $ "Review file: " <> tmpReviewFilename
 
 interactiveNewReview :: NewReview -> IO NewReview
 interactiveNewReview nr =
