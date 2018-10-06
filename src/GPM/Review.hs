@@ -18,7 +18,7 @@ module GPM.Review
   )
 where
 
-import           Protolude      hiding (ask, die, (%))
+import           Protolude      hiding (ask, die, (%),stdout)
 import           Turtle
 
 import           Data.FileEmbed (embedStringFile)
@@ -35,6 +35,8 @@ data ReviewCommand = ReviewStart ReviewOptions
                    | ReviewFeedback ReviewOptions
                    | ReviewQuestion ReviewOptions
                    | ReviewReject ReviewOptions
+                   | ReviewShow
+                   | ReviewRetrieve
                    deriving (Eq)
 
 -- | init gpm branch to handle reviews
@@ -72,7 +74,6 @@ parseFullNewReview = do
                  , title  = fromMaybe "Review Title" nrTitle
                  , user        = nrUser
                  , branch      = nrBranch
-                 , reviewer    = nrUser
                  , description = nrDescription
                  }
 
@@ -92,7 +93,6 @@ parsePartialNewReview status = do
                  , title  = fromMaybe "Review Title" nrTitle
                  , user        = nrUser
                  , branch      = nrBranch
-                 , reviewer    = nrUser
                  , description = nrDescription
                  }
 
@@ -112,6 +112,10 @@ parseReviewCmd =
   (ReviewStart <$> parseFullReviewOptions)
   <|> subcommand "end" "End a review"
   (pure ReviewCommit)
+  <|> subcommand "show" "Show the review"
+  (pure ReviewShow)
+  <|> subcommand "retrieve" "Retrieve all the reviews for current branch"
+  (pure ReviewRetrieve)
 
 
 gatherNewReviewInfos :: NewReview -> Text -> IO NewReview
@@ -151,6 +155,29 @@ handleReview (ReviewChangeRequest opts)   br =
   handleNewReview (setStatus opts "CHANGE_REQUESTED") br
 handleReview (ReviewReject opts)   br =
   handleNewReview (setStatus opts "REJECTED") br
+handleReview ReviewShow br = showReview br
+handleReview ReviewRetrieve br = retrieveReview br
+
+communicateFp :: MonadIO m => Turtle.FilePath -> m ()
+communicateFp filepath = do
+  let fptxt = format fp filepath
+  putText $ "Review file: " <> fptxt
+  export "GPM_REVIEW_FILE" fptxt
+  putText $ "export GPM_REVIEW_FILE=" <> fptxt
+
+retrieveReview :: Text -> IO ()
+retrieveReview br = do
+  reviewName <- getTmpReviewFile br
+  let gpmReviewFile = "reviews" </>
+         fromString (toS ("review-" <> protectStr br <> ".org"))
+  mktree (directory reviewName)
+  cp gpmReviewFile reviewName
+  communicateFp reviewName
+
+showReview :: Text -> IO ()
+showReview br = do
+  reviewName <- getTmpReviewFile br
+  stdout (input reviewName)
 
 protectStr :: Text -> Text
 protectStr =
@@ -164,13 +191,14 @@ validTmpNewReview br = do
   let dstReview = "reviews" </>
          fromString (toS ("review-" <> protectStr br <> ".org"))
   appendFile (toS (format fp dstReview)) ("\n\n" <> tmpReview)
+  debug_ $ "git add " <> toS (format fp dstReview)
+  debug_ $ "git commit -m \"review for " <> br <> "\""
 
 data NewReview =
   NewReview { status      :: Text
             , title       :: Text
             , user        :: Maybe User
             , branch      :: Maybe Text
-            , reviewer    :: Maybe User
             , description :: Maybe Text
             } deriving (Eq)
 
@@ -182,7 +210,6 @@ instance ToMustache NewReview where
     , "title"       ~> title
     , "user"        ~> user
     , "branch"      ~> branch
-    , "reviewer"    ~> reviewer
     , "description" ~> description
     ]
 
@@ -194,6 +221,7 @@ getTmpReviewFile br = do
 
 createTmpNewReview :: NewReview -> IO ()
 createTmpNewReview nr = do
+  putText "DEBUG: create temporary file for the new review"
   ecompiled <- automaticCompile ["./templates"] "new-review.org"
   case ecompiled of
     Left pe -> do
@@ -202,8 +230,9 @@ createTmpNewReview nr = do
     Right compiled -> do
       reviewName <- getTmpReviewFile (fromMaybe "no-name" (branch nr))
       let tmpReviewFilename = format fp reviewName
+      mktree (directory reviewName)
       writeFile (toS tmpReviewFilename) (substitute compiled nr)
-      putText $ "Review file: " <> tmpReviewFilename
+      communicateFp reviewName
 
 interactiveNewReview :: NewReview -> IO NewReview
 interactiveNewReview nr =
@@ -217,8 +246,6 @@ interactiveNewReview nr =
          ask "user" (fromMaybe "your name" (user nr)) identity)
     <*> (maybe (branch nr) Just
          <$> ask "branch" (fromMaybe "related branch" (branch nr)) identity)
-    <*> (maybe (reviewer nr) Just
-         <$> ask "reviewer" "a single nick" identity)
     <*> (maybe (description nr) Just
          <$> ask "description" "the long description" identity)
   where
