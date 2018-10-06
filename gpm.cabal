@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ab6ea5ad975f268ebb05939f453aeb3f190183a3472aaa84b76871d4f1b09e05
+-- hash: a6d129913c89afe00223987f8c28215c0300bbe090e95b121fe66e3c4005a9b1
 
 name:           gpm
 version:        0.1.0.0
@@ -35,13 +35,13 @@ library
   ghc-options: -O2 -Werror -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wnoncanonical-monad-instances
   build-depends:
       base >=4.8 && <5
+    , directory
     , file-embed
     , foldl
     , mustache
     , protolude
     , text
     , turtle
-    , directory
   default-language: Haskell2010
 
 executable gpm
@@ -54,6 +54,7 @@ executable gpm
   ghc-options: -O2 -Werror -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wnoncanonical-monad-instances -threaded -rtsopts -with-rtsopts=-N -optP-Wno-nonportable-include-path
   build-depends:
       base >=4.8 && <5
+    , directory
     , file-embed
     , foldl
     , gpm

@@ -1,3 +1,4 @@
+{-# LANGUAGE ApplicativeDo     #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
@@ -21,11 +22,11 @@ import           Protolude      hiding (ask, die, (%))
 import           Turtle
 
 import           Data.FileEmbed (embedStringFile)
-import           GPM.Helpers    (getGPMCacheDir, debug_)
+import           GPM.Helpers    (getGPMCacheDir, debug_, getGitUser)
 import           Text.Mustache
 
-data ReviewCommand = ReviewStart (Maybe Text)
-                   | ReviewStop (Maybe Text)
+data ReviewCommand = ReviewStart ReviewOptions
+                   | ReviewCommit
                    | ReviewAccept
                    | ReviewFeedback
                    | ReviewQuestion
@@ -42,20 +43,71 @@ init = do
   debug_ "git add reviews"
 
 
+data ReviewOptions = ReviewOptions
+                    { interactive :: Bool
+                    , newReview    :: NewReview
+                    } deriving (Eq)
+
+parseReviewOptions :: Parser ReviewOptions
+parseReviewOptions = ReviewOptions
+                    <$> switch "interactive" 'i' "Interactive mode"
+                    <*> parseNewReview
+
+
+parseNewReview :: Parser NewReview
+parseNewReview = do
+  nrStatus      <- optional $ optText "status"    's' "The status of the review (TODO, QUESTION, ...)"
+  nrTitle       <- optional $ optText "title"     't' "The status title"
+  nrUser        <- optional $ optText "creator"   'c' "The user that created the review"
+  nrBranch      <- optional $ optText "branch"    'b' "The branch related to the review"
+  nrDescription <- optional $ optText "descr"     'd' "Long review description"
+  pure NewReview { status = fromMaybe "TODO" nrStatus
+                 , title  = fromMaybe "Review Title" nrTitle
+                 , user        = nrUser
+                 , branch      = nrBranch
+                 , reviewer    = nrUser
+                 , description = nrDescription
+                 }
+
 parseReviewCmd :: Parser ReviewCommand
 parseReviewCmd =
   subcommand "accept" "Accept the merge" (pure ReviewAccept)
   <|> subcommand "feedback" "Provide a feedback" (pure ReviewFeedback)
   <|> subcommand "question" "Ask a question" (pure ReviewQuestion)
   <|> subcommand "reject" "Reject the merge" (pure ReviewReject)
+  <|> subcommand "start" "Create a new review" (ReviewStart <$> parseReviewOptions)
+  <|> subcommand "end" "End a review" (pure ReviewCommit)
+
+
+gatherNewReviewInfos :: NewReview -> Text -> IO NewReview
+gatherNewReviewInfos iss br = do
+  user <- if isNothing (user iss)
+          then getGitUser
+          else return (user iss)
+  branch <- if isNothing (branch iss)
+            then return (Just br)
+            else return (branch iss)
+  return $ iss { user   = user
+               , branch = branch }
 
 handleReview :: ReviewCommand -> Text -> IO ()
-handleReview (ReviewStart _br) _ = die "TODO"
-handleReview (ReviewStop _br ) _ = die "TODO"
-handleReview ReviewAccept      _ = die "TODO"
-handleReview ReviewFeedback    _ = die "TODO"
-handleReview ReviewQuestion    _ = die "TODO"
-handleReview ReviewReject      _ = die "TODO"
+handleReview (ReviewStart opts) br = do
+  newReviewTmp <- gatherNewReviewInfos (newReview opts) br
+  newReview <- if interactive opts
+               then interactiveNewReview newReviewTmp
+               else return newReviewTmp
+  createTmpNewReview newReview
+handleReview ReviewCommit   _ = validTmpNewReview
+handleReview ReviewAccept   _ = die "TODO"
+handleReview ReviewFeedback _ = die "TODO"
+handleReview ReviewQuestion _ = die "TODO"
+handleReview ReviewReject   _ = die "TODO"
+
+validTmpNewReview :: IO ()
+validTmpNewReview = do
+  tmpReviewFile <- getTmpReviewFile
+  tmpIssue <- readFile (toS (format fp tmpReviewFile))
+  appendFile "issues.org" ("\n\n" <> tmpIssue)
 
 data NewReview =
   NewReview { status      :: Text
@@ -64,7 +116,7 @@ data NewReview =
             , branch      :: Maybe Text
             , reviewer    :: Maybe User
             , description :: Maybe Text
-            }
+            } deriving (Eq)
 
 type User = Text
 
@@ -78,6 +130,11 @@ instance ToMustache NewReview where
     , "description" ~> description
     ]
 
+getTmpReviewFile :: IO Turtle.FilePath
+getTmpReviewFile = do
+  cacheDir <- getGPMCacheDir
+  return $ cacheDir </> "review-feedback.org"
+
 createTmpNewReview :: NewReview -> IO ()
 createTmpNewReview nr = do
   ecompiled <- automaticCompile ["./templates"] "new-review.org"
@@ -86,8 +143,7 @@ createTmpNewReview nr = do
       print pe
       die "Parse ERROR, check your template ./templates/new-review.org"
     Right compiled -> do
-      cacheDir <- getGPMCacheDir
-      let reviewName = cacheDir </> "review-feedback.org"
+      reviewName <- getTmpReviewFile
       writeFile (toS (format fp reviewName)) (substitute compiled nr)
 
 interactiveNewReview :: NewReview -> IO NewReview

@@ -24,12 +24,13 @@ ghc-options:
 - -Wnoncanonical-monad-instances
 dependencies:
 - base >=4.8 && <5
-- protolude
-- turtle
+- directory
 - file-embed
 - foldl
 - mustache
+- protolude
 - text
+- turtle
 library:
   source-dirs: src
 executables:
