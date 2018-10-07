@@ -7,13 +7,16 @@ Maintainer  : yann.esposito@gmail.com
 -}
 module GPM.Serve
   ( init
+  , handleServe
+  , parseServeCommand
+  , ServeCommand
   )
 where
 
 import           Protolude      hiding (ask, die, (%),stdout)
 import           Turtle
 
-import           GPM.Helpers    (getGPMDataDir, debug, debug_)
+import           GPM.Helpers    (getGPMDataDir, debug, debug_, inDir)
 
 getPublicDir :: IO Turtle.FilePath
 getPublicDir = do
@@ -21,23 +24,19 @@ getPublicDir = do
   let publicdir = gpmDataDir </> "public"
   return publicdir
 
+getProjectRoot :: IO Turtle.FilePath
+getProjectRoot = do
+  mReporoot <- debug "git rev-parse --show-toplevel"
+  case mReporoot of
+    Nothing -> die "You don't appear to be in a git repository."
+    Just reporoot -> return (fromString (toS reporoot))
+
 getPublicPrjDir :: IO Turtle.FilePath
 getPublicPrjDir = do
   publicdir <- getPublicDir
-  mReporoot <- debug "git rev-parse --show-toplevel"
-  case mReporoot of
-    Just reporoot -> do
-      let projectName = dirname (fromString (toS reporoot))
-      return (publicdir </> projectName)
-    Nothing -> die "You don't appear to be in a git repository."
-
-inDir :: MonadIO m => Turtle.FilePath -> m a -> m a
-inDir workDir action = do
-  currPwd <- pwd
-  cd workDir
-  res <- action
-  cd currPwd
-  return res
+  reporoot <- getProjectRoot
+  let projectName = basename reporoot
+  return (publicdir </> projectName)
 
 
 -- | init gpm branch to handle reviews
@@ -45,14 +44,39 @@ init :: IO ()
 init = do
   echo "* server init"
   publicdir <- getPublicDir
+  putText (format ("create dir: "%fp) publicdir)
   mktree publicdir
-  debug_ "git init ."
-  output (publicdir </> ".git" </> "description") "Main repositories"
+  inDir publicdir $ do
+    debug_ "git init ."
+    let descriptionFile = publicdir </> ".git" </> "description"
+    output descriptionFile "Main repositories"
+  repoRoot <- getProjectRoot
   publicProjectDir <- getPublicPrjDir
+  debug_ (format ("git clone --bare "%fp%" "%fp)
+                 repoRoot
+                 publicProjectDir)
   inDir publicProjectDir $ do
     mv ("hooks" </> "post-update.sample") ("hooks" </> "post-update")
     _ <- chmod executable ("hooks" </> "post-update")
     debug_ "git update-server-info"
+
+-- | Serve command
+
+data ServeCommand = ServeStart
+                   | ServeStop
+                   | ServeUpdate
+                   deriving (Eq)
+
+parseServeCommand :: Parser ServeCommand
+parseServeCommand =
+  subcommand "start" "Start to serve all gpm tracked repositories" (pure ServeStart)
+  <|> subcommand "stop" "Stop to serve all gpm tracked repositories" (pure ServeStop)
+  <|> subcommand "update" "Update the served git repository" (pure ServeUpdate)
+
+handleServe :: ServeCommand -> Text -> IO ()
+handleServe ServeStart  _ = handleServeStart
+handleServe ServeStop   _ = handleServeStop
+handleServe ServeUpdate _ = handleUpdate
 
 handleUpdate :: IO ()
 handleUpdate = do
@@ -60,8 +84,14 @@ handleUpdate = do
   inDir pubPrjDir $
     debug_ "git pull"
 
-handleServe :: IO ()
-handleServe = do
+handleServeStart :: IO ()
+handleServeStart = do
   pubDir <- getPublicDir
   inDir pubDir $
-    debug_ "git instaweb --http=webrick"
+    debug_ "git instaweb --http=webrick start"
+
+handleServeStop :: IO ()
+handleServeStop = do
+  pubDir <- getPublicDir
+  inDir pubDir $
+    debug_ "git instaweb --http=webrick stop"

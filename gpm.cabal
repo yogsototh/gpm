@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a6d129913c89afe00223987f8c28215c0300bbe090e95b121fe66e3c4005a9b1
+-- hash: 1cf72e2df7c9707db3de5badabd66d0a2123d9260d2eff8bfa4e32ef4c449cfd
 
 name:           gpm
 version:        0.1.0.0
@@ -27,6 +27,7 @@ library
       GPM.Init
       GPM.Issue
       GPM.Review
+      GPM.Serve
   other-modules:
       Paths_gpm
   hs-source-dirs:

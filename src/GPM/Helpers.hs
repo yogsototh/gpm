@@ -13,6 +13,7 @@ module GPM.Helpers
   , getGPMDataDir
   , getGitUser
   , inGPM
+  , inDir
   )
 where
 
@@ -59,3 +60,12 @@ inGPM = bracket safeChangeBranch safeReturnBranch
 getGPMDataDir :: IO Turtle.FilePath
 getGPMDataDir = fromString <$> Directory.getXdgDirectory Directory.XdgData "gpm"
 
+-- | Perform some actions in some directory.
+-- Take care of returning the the previous directory after the action are finished
+inDir :: MonadIO m => Turtle.FilePath -> m a -> m a
+inDir workDir action = do
+  currPwd <- pwd
+  cd workDir
+  res <- action
+  cd currPwd
+  return res
