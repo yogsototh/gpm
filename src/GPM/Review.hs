@@ -197,7 +197,12 @@ retrieveReview br = do
 showReview :: Text -> IO ()
 showReview br = do
   reviewName <- getTmpReviewFile br
+  putText "--------------------------------------------------------------------------------"
+  putText $ format ("Review file: "%fp) reviewName
+  putText $ format ("(setq org-annotate-file-storage-file \""%fp%"\")") reviewName
+  putText "--------------------------------------------------------------------------------"
   stdout (input reviewName)
+  putText "--------------------------------------------------------------------------------"
 
 protectStr :: Text -> Text
 protectStr =
