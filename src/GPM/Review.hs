@@ -22,7 +22,7 @@ import           Protolude      hiding (ask, die, (%),stdout)
 import           Turtle
 
 import           Data.FileEmbed (embedStringFile)
-import           GPM.Helpers    (getGPMCacheDir, debug_, getGitUser)
+import           GPM.Helpers    (getGPMDataDir, debug_, getGitUser)
 import           Text.Mustache
 import qualified Data.Text as Text
 import qualified Data.Char as Char
@@ -52,10 +52,30 @@ init = do
   debug_ "git add templates"
 
 
+-- | Command Line Options
 data ReviewOptions = ReviewOptions
                     { interactive :: Bool
                     , newReview    :: NewReview
                     } deriving (Eq)
+
+data NewReview =
+  NewReview { status      :: Text
+            , title       :: Text
+            , user        :: Maybe User
+            , branch      :: Maybe Text
+            , description :: Maybe Text
+            } deriving (Eq)
+
+type User = Text
+
+instance ToMustache NewReview where
+  toMustache NewReview{..} = object
+    [ "status"      ~> status
+    , "title"       ~> title
+    , "user"        ~> user
+    , "branch"      ~> branch
+    , "description" ~> description
+    ]
 
 parseFullReviewOptions :: Parser ReviewOptions
 parseFullReviewOptions =
@@ -194,30 +214,11 @@ validTmpNewReview br = do
   debug_ $ "git add " <> toS (format fp dstReview)
   debug_ $ "git commit -m \"review for " <> br <> "\""
 
-data NewReview =
-  NewReview { status      :: Text
-            , title       :: Text
-            , user        :: Maybe User
-            , branch      :: Maybe Text
-            , description :: Maybe Text
-            } deriving (Eq)
-
-type User = Text
-
-instance ToMustache NewReview where
-  toMustache NewReview{..} = object
-    [ "status"      ~> status
-    , "title"       ~> title
-    , "user"        ~> user
-    , "branch"      ~> branch
-    , "description" ~> description
-    ]
-
 getTmpReviewFile :: Text -> IO Turtle.FilePath
 getTmpReviewFile br = do
-  cacheDir <- getGPMCacheDir
+  gpmDataDir <- getGPMDataDir
   let reviewFilename = "review-" <> protectStr br <> ".org"
-  return $ cacheDir </> fromString (toS reviewFilename)
+  return $ gpmDataDir </> fromString (toS reviewFilename)
 
 createTmpNewReview :: NewReview -> IO ()
 createTmpNewReview nr = do

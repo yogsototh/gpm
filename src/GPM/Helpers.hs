@@ -10,7 +10,7 @@ module GPM.Helpers
   ( debug
   , debug_
   , getCurrentGitBranch
-  , getGPMCacheDir
+  , getGPMDataDir
   , getGitUser
   , inGPM
   )
@@ -56,6 +56,6 @@ inGPM = bracket safeChangeBranch safeReturnBranch
       debug_ "git stash pop"
 
 -- | Retrieve the cache directory to save temporary files in gpm
-getGPMCacheDir :: IO Turtle.FilePath
-getGPMCacheDir = fromString <$> Directory.getXdgDirectory Directory.XdgCache "gpm"
+getGPMDataDir :: IO Turtle.FilePath
+getGPMDataDir = fromString <$> Directory.getXdgDirectory Directory.XdgData "gpm"
 
