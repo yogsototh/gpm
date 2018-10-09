@@ -3,6 +3,9 @@
 
 *Principle: put project management info along the repository not in some DB.*
 
+Clone the project, get the code, but also the issues, the doc, the webpage,
+everything...
+
 * Git Project Manager
 
 Put a project management tool in git.

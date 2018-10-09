@@ -13,10 +13,11 @@ module GPM.Serve
   )
 where
 
-import           Protolude      hiding (ask, die, (%),stdout)
+import           Protolude                      hiding (die, (%))
 import           Turtle
 
-import           GPM.Helpers    (getGPMDataDir, debug, debug_, inDir)
+import           GPM.Helpers                    (debug, debug_, getGPMDataDir,
+                                                 inDir)
 
 getPublicDir :: IO Turtle.FilePath
 getPublicDir = do
@@ -28,7 +29,7 @@ getProjectRoot :: IO Turtle.FilePath
 getProjectRoot = do
   mReporoot <- debug "git rev-parse --show-toplevel"
   case mReporoot of
-    Nothing -> die "You don't appear to be in a git repository."
+    Nothing       -> die "You don't appear to be in a git repository."
     Just reporoot -> return (fromString (toS reporoot))
 
 getPublicPrjDir :: IO Turtle.FilePath
@@ -89,6 +90,7 @@ handleServeStart = do
   pubDir <- getPublicDir
   inDir pubDir $
     debug_ "git instaweb --http=webrick start"
+    -- TODO: Do not forget to also git serve
 
 handleServeStop :: IO ()
 handleServeStop = do
