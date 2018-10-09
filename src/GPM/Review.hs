@@ -137,7 +137,6 @@ parseReviewCmd =
   <|> subcommand "retrieve" "Retrieve all the reviews for current branch"
   (pure ReviewRetrieve)
 
-
 gatherNewReviewInfos :: NewReview -> Text -> IO NewReview
 gatherNewReviewInfos iss br = do
   user <- if isNothing (user iss)
@@ -155,7 +154,7 @@ handleNewReview opts br = do
   newReview <- if interactive opts
                then interactiveNewReview newReviewTmp
                else return newReviewTmp
-  createTmpNewReview newReview
+  createTmpNewReview newReview br
 
 setStatus :: ReviewOptions -> Text -> ReviewOptions
 setStatus ro status = ro { newReview =  (newReview ro) { status = status } }
@@ -178,9 +177,11 @@ handleReview (ReviewReject opts)   br =
 handleReview ReviewShow br = showReview br
 handleReview ReviewRetrieve br = retrieveReview br
 
-communicateFp :: MonadIO m => Turtle.FilePath -> m ()
+communicateFp :: Turtle.FilePath -> IO ()
 communicateFp filepath = do
   let fptxt = format fp filepath
+  mainReviewName <- getMainReviewFile
+  putText $ "Main review file: " <> format fp mainReviewName
   putText $ "Review file: " <> fptxt
   export "GPM_REVIEW_FILE" fptxt
   putText $ "export GPM_REVIEW_FILE=" <> fptxt
@@ -194,12 +195,25 @@ retrieveReview br = do
   cp gpmReviewFile reviewName
   communicateFp reviewName
 
+getMainReviewFile :: IO Turtle.FilePath
+getMainReviewFile = do
+  gpmDataDir <- getGPMDataDir
+  return $ gpmDataDir </> "current-review.org"
+
+-- | Use a single main name for current review
+linkReviewFile :: Turtle.FilePath -> IO Turtle.FilePath
+linkReviewFile reviewFile = do
+  mainReviewFile <- getMainReviewFile
+  debug_ $ format ("ln -s "%fp%" "%fp) reviewFile mainReviewFile
+  return mainReviewFile
+
 showReview :: Text -> IO ()
 showReview br = do
   reviewName <- getTmpReviewFile br
+  mainReviewName <- getMainReviewFile
   putText "--------------------------------------------------------------------------------"
   putText $ format ("Review file: "%fp) reviewName
-  putText $ format ("(setq org-annotate-file-storage-file \""%fp%"\")") reviewName
+  putText $ format ("Main Review file: "%fp) mainReviewName
   putText "--------------------------------------------------------------------------------"
   stdout (input reviewName)
   putText "--------------------------------------------------------------------------------"
@@ -225,8 +239,8 @@ getTmpReviewFile br = do
   let reviewFilename = "review-" <> protectStr br <> ".org"
   return $ gpmDataDir </> fromString (toS reviewFilename)
 
-createTmpNewReview :: NewReview -> IO ()
-createTmpNewReview nr = do
+createTmpNewReview :: NewReview -> Text -> IO ()
+createTmpNewReview nr br = do
   putText "DEBUG: create temporary file for the new review"
   ecompiled <- automaticCompile ["./templates"] "new-review.org"
   case ecompiled of
@@ -234,10 +248,10 @@ createTmpNewReview nr = do
       print pe
       die "Parse ERROR, check your template ./templates/new-review.org"
     Right compiled -> do
-      reviewName <- getTmpReviewFile (fromMaybe "no-name" (branch nr))
-      let tmpReviewFilename = format fp reviewName
+      reviewName <- getTmpReviewFile (fromMaybe br (branch nr))
       mktree (directory reviewName)
-      writeFile (toS tmpReviewFilename) (substitute compiled nr)
+      writeFile (toS (format fp reviewName)) (substitute compiled nr)
+      linkReviewFile reviewName
       communicateFp reviewName
 
 interactiveNewReview :: NewReview -> IO NewReview
@@ -257,5 +271,10 @@ interactiveNewReview nr =
   where
     ask :: Text -> Text -> (Text -> a) -> IO (Maybe a)
     ask field ex tr = do
-      putText $ "Please enter " <> field <> "("<> ex <>"): "
-      fmap (tr . lineToText) <$> readline
+      putText $ "Please enter " <> field <> " ("<> ex <>"): "
+      mline <- readline
+      case mline of
+        Nothing -> return Nothing
+        Just line -> if line == ""
+                        then return Nothing
+                        else return . Just . tr . lineToText $ line
