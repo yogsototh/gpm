@@ -53,6 +53,8 @@ init = do
     output descriptionFile "Main repositories"
   repoRoot <- getProjectRoot
   publicProjectDir <- getPublicPrjDir
+  putText (format ("rmtree " % fp) publicProjectDir)
+  rmtree publicProjectDir
   debug_ (format ("git clone --bare "%fp%" "%fp)
                  repoRoot
                  publicProjectDir)

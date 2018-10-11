@@ -1,8 +1,8 @@
-**** {{priority}} {{status}} {{title}}                                      :{{#tags}}{{tag}}:{{/tags}}
+**** {{priority}} {{status}} {{title}}{{#tags}}                             :{{tags}}:{{/tags}}
    :PROPERTIES:
-   :CREATOR:  {{user}}
-   {{#branch}}:BRANCH:   {{branch}}{{/branch}}
-   {{#assignee}}:ASSIGNEE: {{assignee}}{{/assignee}}
-   {{#reviewers}}:REQUESTED_REVIEWERS:{{#reviewers}} {{reviewer}}{{/reviewers}}{{/reviewers}}
+   :CREATOR:  {{user}}{{#branch}}
+   :BRANCH:   {{branch}}{{/branch}}{{#assignee}}
+   :ASSIGNEE: {{assignee}}{{/assignee}}{{#reviewers}}
+   :REQUESTED_REVIEWERS: {{reviewers}}{{/reviewers}}
    :END:
 {{description}}

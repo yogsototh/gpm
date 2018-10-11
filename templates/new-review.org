@@ -1,6 +1,6 @@
 **** {{status}} {{title}}
    :PROPERTIES:
-   :REVIEWER:  {{user}}
-   {{#branch}}:BRANCH:   {{branch}}{{/branch}}
+   :REVIEWER:  {{user}}{{#branch}}
+   :BRANCH: {{branch}}{{/branch}}
    :END:
 {{description}}

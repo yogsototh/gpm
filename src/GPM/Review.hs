@@ -257,24 +257,22 @@ createTmpNewReview nr br = do
 interactiveNewReview :: NewReview -> IO NewReview
 interactiveNewReview nr =
   NewReview
-    <$> (fromMaybe (status nr)
-         <$> ask "status" (status nr) identity)
-    <*> (fromMaybe (title nr)
-         <$> ask "title" (title nr) identity)
-    <*> (maybe (user nr) Just
-         <$>
-         ask "user" (fromMaybe "your name" (user nr)) identity)
-    <*> (maybe (branch nr) Just
-         <$> ask "branch" (fromMaybe "related branch" (branch nr)) identity)
-    <*> (maybe (description nr) Just
-         <$> ask "description" "the long description" identity)
+    <$> ask "status"                     (status nr) identity
+    <*> ask "title"                       (title nr) identity
+    <*> ask "user"          (fromMaybe "" (user nr)) notEmpty
+    <*> ask "branch"      (fromMaybe "" (branch nr)) notEmpty
+    <*> ask "description"                        ""  notEmpty
   where
-    ask :: Text -> Text -> (Text -> a) -> IO (Maybe a)
+    notEmpty :: Text -> Maybe Text
+    notEmpty "" = Nothing
+    notEmpty str = Just str
+    ask :: Text -> Text -> (Text -> a) -> IO a
     ask field ex tr = do
-      putText $ "Please enter " <> field <> " ("<> ex <>"): "
+      putText $ "Please enter " <> field
+        <> (if ex /= "" then " ("<> ex <>"): " else "")
       mline <- readline
       case mline of
-        Nothing -> return Nothing
+        Nothing -> return (tr "")
         Just line -> if line == ""
-                        then return Nothing
-                        else return . Just . tr . lineToText $ line
+                        then return (tr "")
+                        else return . tr . lineToText $ line

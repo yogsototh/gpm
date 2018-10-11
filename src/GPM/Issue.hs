@@ -97,9 +97,9 @@ instance ToMustache NewIssue where
     , "title"       ~> title
     , "user"        ~> user
     , "branch"      ~> branch
-    , "tags"        ~> tags
+    , "tags"        ~> if null tags then Nothing else Just (T.intercalate ":" tags)
     , "assignee"    ~> assignee
-    , "reviewers"   ~> reviewers
+    , "reviewers"   ~> if null reviewers then Nothing else Just (T.intercalate "," reviewers)
     , "description" ~> description
     ]
 
@@ -119,44 +119,48 @@ handleNewIssue opts br = do
               then interactiveNewIssue newIssueTmp
               else return newIssueTmp
   createTmpNewIssue newIssue
-  validTmpNewIssue
+  validTmpNewIssue newIssue
 
 interactiveNewIssue :: NewIssue -> IO NewIssue
 interactiveNewIssue ni =
   NewIssue
-    <$> (fromMaybe (priority ni)
-          <$> ask "priority" (ptot (priority ni)) toPriority)
-    <*> (fromMaybe (status ni)
-         <$> ask "status" (status ni) identity)
-    <*> (fromMaybe (title ni)
-         <$> ask "title" (title ni) identity)
-    <*> (maybe (user ni) Just
-         <$>
-         ask "user" (fromMaybe "your name" (user ni)) identity)
-    <*> (maybe (branch ni) Just
-         <$> ask "branch" (fromMaybe "related branch" (branch ni)) identity)
-    <*> (fromMaybe (tags ni)
-         <$> ask "tags" "comma separated tags" (T.splitOn ","))
-    <*> (maybe (assignee ni) Just
-         <$> ask "assignee" "a single nick" identity)
-    <*> (fromMaybe (tags ni)
-         <$> ask "reviewers" "comma separated nicks" (T.splitOn ","))
-    <*> (maybe (description ni) Just
-         <$> ask "description" "the long description" identity)
+    <$> ask "priority" (ptot (priority ni)) toPriority
+    <*> ask "status" (status ni) identity
+    <*> ask "title" (title ni) identity
+    <*> ask "user" (fromMaybe "" (user ni)) notEmpty
+    <*> ask "branch" (fromMaybe "" (branch ni)) notEmpty
+    <*> ask "tags" (T.intercalate "," (tags ni)) (T.splitOn ",")
+    <*> ask "assignee" (fromMaybe "" (assignee ni)) notEmpty
+    <*> ask "reviewers (comma separated)" (T.intercalate "," (reviewers ni)) (T.splitOn ",")
+    <*> ask "description" (fromMaybe "" (description ni)) notEmpty
   where
     ptot :: Priority -> Text
     ptot PriorityA = "A"
     ptot PriorityB = "B"
     ptot PriorityC = "C"
-    ask :: Text -> Text -> (Text -> a) -> IO (Maybe a)
-    ask field ex tr = do
-      putText $ "Please enter " <> field <> "("<> ex <>"): "
-      fmap (tr . lineToText) <$> readline
 
-validTmpNewIssue :: IO ()
-validTmpNewIssue = do
+    notEmpty :: Text -> Maybe Text
+    notEmpty "" = Nothing
+    notEmpty str = Just str
+
+    ask :: Text -> Text -> (Text -> a) -> IO a
+    ask field defaultValue tr = do
+      putText $ "Please enter " <> field
+        <> (if defaultValue /= "" then " ("<> defaultValue <>"): " else "")
+      mline <- readline
+      case mline of
+        Nothing -> return (tr defaultValue)
+        Just line -> if line == ""
+                        then return (tr defaultValue)
+                        else return . tr . lineToText $ line
+
+validTmpNewIssue :: NewIssue -> IO ()
+validTmpNewIssue ni = do
   tmpIssue <- readFile ".issues.org.tmp"
   appendFile "issues.org" ("\n\n" <> tmpIssue)
+  debug_ "git add issues.org"
+  debug_ $ "git commit -m \"New Issue: " <> T.replace "\"" "'" (title ni) <> "\""
+  rm ".issues.org.tmp"
 
 gatherNewIssueInfos :: NewIssue -> Text -> IO NewIssue
 gatherNewIssueInfos iss br = do
