@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1cf72e2df7c9707db3de5badabd66d0a2123d9260d2eff8bfa4e32ef4c449cfd
+-- hash: 2181d6cb75bcd17dab9a58fcfa594141af68c4c3e34050da6ce0beeb47bb7642
 
 name:           gpm
 version:        0.1.0.0
@@ -35,7 +35,8 @@ library
   default-extensions: OverloadedStrings NoImplicitPrelude ScopedTypeVariables Strict
   ghc-options: -O2 -Werror -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wnoncanonical-monad-instances
   build-depends:
-      base >=4.8 && <5
+      ansi-terminal
+    , base >=4.8 && <5
     , directory
     , file-embed
     , foldl
@@ -54,7 +55,8 @@ executable gpm
   default-extensions: OverloadedStrings NoImplicitPrelude ScopedTypeVariables Strict
   ghc-options: -O2 -Werror -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wnoncanonical-monad-instances -threaded -rtsopts -with-rtsopts=-N -optP-Wno-nonportable-include-path
   build-depends:
-      base >=4.8 && <5
+      ansi-terminal
+    , base >=4.8 && <5
     , directory
     , file-embed
     , foldl

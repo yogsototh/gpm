@@ -11,13 +11,13 @@ module GPM.Init
   (init)
 where
 
-import           Protolude     hiding (die,fold)
+import           Protolude     hiding (die, fold)
 import           Turtle
 
 import qualified Control.Foldl as Fold
 
 import qualified GPM.Docs      as Docs
-import           GPM.Helpers   (debug_)
+import           GPM.Helpers   (debug_, yellow)
 import qualified GPM.Issue     as Issue
 import qualified GPM.Review    as Review
 import qualified GPM.Serve     as Serve
@@ -25,7 +25,7 @@ import qualified GPM.Serve     as Serve
 -- | Init a repository with a new empty branch named @gpm@
 init :: IO ()
 init = do
-  echo "# <GPM> -- Git Project Manager"
+  yellow "# GPM -- Git Project Manager"
   mkNewEmptyBranch "gpm"
   Issue.init
   Docs.init
@@ -40,7 +40,7 @@ mkNewEmptyBranch br = sh $ do
   clean <- fold (inshell "git status --porcelain" empty) Fold.null
   if clean
     then liftIO $ do
-      putText $ "create a new branch " <> br <> " (be sure the branch " <> br <> " doesn't already exists)"
+      putText $ "Create a new branch " <> br <> " (be sure the branch " <> br <> " doesn't already exists)"
       debug_ $ "git checkout --orphan " <> br
       echo "cleanup the branch"
       debug_ "git rm --cached -r ."

@@ -140,7 +140,7 @@ interactiveNewIssue ni =
     ptot PriorityC = "C"
 
     notEmpty :: Text -> Maybe Text
-    notEmpty "" = Nothing
+    notEmpty ""  = Nothing
     notEmpty str = Just str
 
     ask :: Text -> Text -> (Text -> a) -> IO a
@@ -175,7 +175,7 @@ gatherNewIssueInfos iss br = do
 
 init :: IO ()
 init = do
-  echo "* issue.org"
+  green "* issue.org"
   writeFile "issues.org" $(embedStringFile "templates/issues.org")
   debug_ "git add issues.org"
   mktree "templates"

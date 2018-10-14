@@ -13,11 +13,10 @@ module GPM.Serve
   )
 where
 
-import           Protolude                      hiding (die, (%))
+import           Protolude   hiding (die, (%))
 import           Turtle
 
-import           GPM.Helpers                    (debug, debug_, getGPMDataDir,
-                                                 inDir)
+import           GPM.Helpers (debug, debug_, getGPMDataDir, inDir, green)
 
 getPublicDir :: IO Turtle.FilePath
 getPublicDir = do
@@ -39,11 +38,10 @@ getPublicPrjDir = do
   let projectName = basename reporoot
   return (publicdir </> projectName)
 
-
 -- | init gpm branch to handle reviews
 init :: IO ()
 init = do
-  echo "* server init"
+  green "* server init"
   publicdir <- getPublicDir
   putText (format ("create dir: "%fp) publicdir)
   mktree publicdir
@@ -53,8 +51,9 @@ init = do
     output descriptionFile "Main repositories"
   repoRoot <- getProjectRoot
   publicProjectDir <- getPublicPrjDir
-  putText (format ("rmtree " % fp) publicProjectDir)
-  rmtree publicProjectDir
+  whenM (testdir publicProjectDir) $ do
+    putText (format ("rmtree " % fp) publicProjectDir)
+    rmtree publicProjectDir
   debug_ (format ("git clone --bare "%fp%" "%fp)
                  repoRoot
                  publicProjectDir)

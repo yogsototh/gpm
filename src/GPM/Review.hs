@@ -18,15 +18,16 @@ module GPM.Review
   )
 where
 
-import           Protolude      hiding (ask, die, (%),stdout)
+import           Protolude        hiding (ask, die, stdout, (%))
 import           Turtle
 
-import           Data.FileEmbed (embedStringFile)
-import           GPM.Helpers    (getGPMDataDir, debug_, getGitUser)
-import           Text.Mustache
-import qualified Data.Text as Text
-import qualified Data.Char as Char
+import qualified Data.Char        as Char
+import           Data.FileEmbed   (embedStringFile)
+import qualified Data.Text        as Text
+import           GPM.Helpers      (debug_, getGPMDataDir, getGitUser, green,
+                                   green)
 import qualified System.Directory as Directory
+import           Text.Mustache
 
 data ReviewCommand = ReviewStart ReviewOptions
                    | ReviewCommit
@@ -42,6 +43,7 @@ data ReviewCommand = ReviewStart ReviewOptions
 -- | init gpm branch to handle reviews
 init :: IO ()
 init = do
+  green "* Init Reviews support"
   let fic = "reviews" </> "write-contributing-yogsototh.org"
   mktree "reviews"
   putText $ format ("* "%fp) fic
@@ -51,11 +53,10 @@ init = do
   writeFile "templates/new-review.org" $(embedStringFile "templates/new-review.org")
   debug_ "git add templates"
 
-
 -- | Command Line Options
 data ReviewOptions = ReviewOptions
                     { interactive :: Bool
-                    , newReview    :: NewReview
+                    , newReview   :: NewReview
                     } deriving (Eq)
 
 data NewReview =
@@ -212,8 +213,8 @@ showReview br = do
   reviewName <- getTmpReviewFile br
   mainReviewName <- getMainReviewFile
   putText "--------------------------------------------------------------------------------"
-  putText $ format ("Review file: "%fp) reviewName
-  putText $ format ("Main Review file: "%fp) mainReviewName
+  green $ format ("Review file: "%fp) reviewName
+  green $ format ("Main Review file: "%fp) mainReviewName
   putText "--------------------------------------------------------------------------------"
   stdout (input reviewName)
   putText "--------------------------------------------------------------------------------"
@@ -264,7 +265,7 @@ interactiveNewReview nr =
     <*> ask "description"                        ""  notEmpty
   where
     notEmpty :: Text -> Maybe Text
-    notEmpty "" = Nothing
+    notEmpty ""  = Nothing
     notEmpty str = Just str
     ask :: Text -> Text -> (Text -> a) -> IO a
     ask field ex tr = do

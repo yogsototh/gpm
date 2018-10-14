@@ -24,6 +24,7 @@ ghc-options:
 - -Wnoncanonical-monad-instances
 dependencies:
 - base >=4.8 && <5
+- ansi-terminal
 - directory
 - file-embed
 - foldl

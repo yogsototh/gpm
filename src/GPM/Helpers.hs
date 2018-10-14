@@ -14,13 +14,18 @@ module GPM.Helpers
   , getGitUser
   , inGPM
   , inDir
+  , red
+  , green
+  , yellow
   )
 where
 
-import qualified Control.Foldl    as Fold
 import           Protolude        hiding (die)
-import qualified System.Directory as Directory
 import           Turtle
+
+import qualified Control.Foldl    as Fold
+import qualified System.Directory as Directory
+import qualified System.Console.ANSI as Console
 
 -- | execute a shell script and return the last line as text
 -- but also log the command to the console to minimize surprise
@@ -69,3 +74,21 @@ inDir workDir action = do
   res <- action
   cd currPwd
   return res
+
+
+putTextColor :: Console.Color -> Text -> IO ()
+putTextColor color t = do
+  Console.setSGR [ Console.SetColor Console.Foreground Console.Dull color
+                 , Console.SetConsoleIntensity Console.NormalIntensity
+                 ]
+  putText t
+  Console.setSGR [Console.Reset]
+
+green :: Text -> IO ()
+green = putTextColor Console.Green
+
+yellow :: Text -> IO ()
+yellow = putTextColor Console.Yellow
+
+red :: Text -> IO ()
+red = putTextColor Console.Red

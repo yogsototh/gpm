@@ -5,4 +5,4 @@
    :ASSIGNEE: {{assignee}}{{/assignee}}{{#reviewers}}
    :REQUESTED_REVIEWERS: {{reviewers}}{{/reviewers}}
    :END:
-{{description}}
+{{#description}}{{description}}{{/description}}

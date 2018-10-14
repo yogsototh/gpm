@@ -12,14 +12,13 @@ module GPM.Docs
 where
 
 import           Protolude
-import           Turtle
 
 import           Data.FileEmbed (embedStringFile)
 
-import           GPM.Helpers    (debug_)
+import           GPM.Helpers    (debug_,green)
 
 init :: IO ()
 init = do
-  echo "* wiki.org"
+  green "* wiki.org"
   writeFile "wiki.org" $(embedStringFile "templates/wiki.org")
   debug_ "git add wiki.org"
