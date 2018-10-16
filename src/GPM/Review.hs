@@ -91,8 +91,8 @@ parseFullNewReview = do
   nrUser        <- optional $ optText "creator"   'c' "The user that created the review"
   nrBranch      <- optional $ optText "branch"    'b' "The branch related to the review"
   nrDescription <- optional $ optText "descr"     'd' "Long review description"
-  pure NewReview { status = fromMaybe "TODO" nrStatus
-                 , title  = fromMaybe "Review Title" nrTitle
+  pure NewReview { status      = fromMaybe "TODO" nrStatus
+                 , title       = fromMaybe "Review Title" nrTitle
                  , user        = nrUser
                  , branch      = nrBranch
                  , description = nrDescription
@@ -182,10 +182,10 @@ communicateFp :: Turtle.FilePath -> IO ()
 communicateFp filepath = do
   let fptxt = format fp filepath
   mainReviewName <- getMainReviewFile
-  putText $ "Main review file: " <> format fp mainReviewName
-  putText $ "Review file: " <> fptxt
+  putErrText $ "Main review file: " <> format fp mainReviewName
+  putErrText $ "Review file: " <> fptxt
   export "GPM_REVIEW_FILE" fptxt
-  putText $ "export GPM_REVIEW_FILE=" <> fptxt
+  putErrText $ "export GPM_REVIEW_FILE=" <> fptxt
 
 retrieveReview :: Text -> IO ()
 retrieveReview br = do
@@ -242,7 +242,7 @@ getTmpReviewFile br = do
 
 createTmpNewReview :: NewReview -> Text -> IO ()
 createTmpNewReview nr br = do
-  putText "DEBUG: create temporary file for the new review"
+  putErrText "Create temporary file for the new review"
   ecompiled <- automaticCompile ["./templates"] "new-review.org"
   case ecompiled of
     Left pe -> do

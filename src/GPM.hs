@@ -44,8 +44,3 @@ parser = subcommand "init" "Initialize gpm" (pure Init)
          <|> Serve <$> subcommand "serve"
                          "Serve the git to the web"
                          Serve.parseServeCommand
-
-debug :: Text -> IO ()
-debug cmd = do
-  putText cmd
-  stdout $ inshell cmd empty

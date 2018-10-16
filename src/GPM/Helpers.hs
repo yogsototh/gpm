@@ -31,7 +31,7 @@ import qualified System.Console.ANSI as Console
 -- but also log the command to the console to minimize surprise
 debug :: Text -> IO (Maybe Text)
 debug cmd = do
-  putText cmd
+  putErrText cmd
   fmap lineToText <$> _foldIO (inshell cmd empty) (Fold.generalize Fold.last)
 
 -- | execute a shell script without stdin and without handling output

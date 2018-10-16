@@ -40,9 +40,9 @@ mkNewEmptyBranch br = sh $ do
   clean <- fold (inshell "git status --porcelain" empty) Fold.null
   if clean
     then liftIO $ do
-      putText $ "Create a new branch " <> br <> " (be sure the branch " <> br <> " doesn't already exists)"
+      putErrText $ "Create a new branch " <> br <> " (be sure the branch " <> br <> " doesn't already exists)"
       debug_ $ "git checkout --orphan " <> br
-      echo "cleanup the branch"
+      putErrText "cleanup the branch"
       debug_ "git rm --cached -r ."
       debug_ "git clean -fd"
     else die "Please take care of pending modification and untracked files (you can use git stash --all)"
