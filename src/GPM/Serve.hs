@@ -67,6 +67,7 @@ init = do
 data ServeCommand = ServeStart
                    | ServeStop
                    | ServeUpdate
+                   | ProjectDir
                    deriving (Eq)
 
 parseServeCommand :: Parser ServeCommand
@@ -74,27 +75,35 @@ parseServeCommand =
   subcommand "start" "Start to serve all gpm tracked repositories" (pure ServeStart)
   <|> subcommand "stop" "Stop to serve all gpm tracked repositories" (pure ServeStop)
   <|> subcommand "update" "Update the served git repository" (pure ServeUpdate)
+  <|> subcommand "path" "Show the path of the bare repository" (pure ServeUpdate)
 
 handleServe :: ServeCommand -> Text -> IO ()
 handleServe ServeStart  _ = handleServeStart
 handleServe ServeStop   _ = handleServeStop
 handleServe ServeUpdate _ = handleUpdate
+handleServe ProjectDir  _ = handleProjectDir
 
 handleUpdate :: IO ()
 handleUpdate = do
   pubPrjDir <- getPublicPrjDir
-  inDir pubPrjDir $
-    debug_ "git pull"
+  inDir pubPrjDir $ do
+    pwd >>= putText . format fp
+    debug_ "git fetch"
 
 handleServeStart :: IO ()
 handleServeStart = do
   pubDir <- getPublicDir
-  inDir pubDir $
+  inDir pubDir $ do
+    pwd >>= putText . format fp
     debug_ "git instaweb --http=webrick start"
     -- TODO: Do not forget to also git serve
 
 handleServeStop :: IO ()
 handleServeStop = do
   pubDir <- getPublicDir
-  inDir pubDir $
+  inDir pubDir $ do
+    pwd >>= putText . format fp
     debug_ "git instaweb --http=webrick stop"
+
+handleProjectDir :: IO ()
+handleProjectDir = getPublicDir >>= putText . format fp
