@@ -26,7 +26,26 @@ import qualified GPM.Hooks     as Hooks
 -- | Init a repository with a new empty branch named @gpm@
 init :: IO ()
 init = do
-  yellow "# GPM -- Git Project Manager"
+  yellow "GPM -- Git Project Manager"
+  yellow "=========================="
+  hasGPMBranch <- checkIfRepoHasGPMBranch
+  case hasGPMBranch of
+    Just "gpm"     -> echo "You appear to already have a gpm branch."
+    Just gpmBranch -> initFromRemote gpmBranch
+    Nothing        -> rawInit
+
+checkIfRepoHasGPMBranch :: IO (Maybe Text)
+checkIfRepoHasGPMBranch =
+  fmap lineToText <$> _foldIO searchGPMBranch (Fold.generalize Fold.last)
+  where
+    searchGPMBranch = inshell "git branch -a" empty
+                      & grep ("gpm" <|> suffix "/gpm")
+
+initFromRemote :: Text -> IO ()
+initFromRemote br = debug_ $ "git branch gpm " <> br
+
+rawInit :: IO ()
+rawInit = do
   mkNewEmptyBranch "gpm"
   Issue.init
   Docs.init

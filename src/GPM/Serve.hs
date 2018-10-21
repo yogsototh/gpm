@@ -23,8 +23,6 @@ import           GPM.Helpers                    (debug, debug_, getGPMDataDir,
 
 -- | External Lib Imports
 import qualified Data.Text                      as Text
-import qualified Network.Wai.Application.Static as WaiStatic
-import qualified Network.Wai.Handler.Warp       as Warp
 import qualified System.Posix.Process           as Process
 
 -- | Retrieve a public dir to serve git repositories
@@ -107,23 +105,24 @@ handleServeStart = do
   pubDir <- getPublicDir
   inDir pubDir $ do
     pwd >>= putText . format fp
+    dirServe pubDir
     debug_ "git instaweb --http=webrick start"
-    dirServe
 
 handleServeStop :: IO ()
 handleServeStop = do
   pubDir <- getPublicDir
   inDir pubDir $ do
     pwd >>= putText . format fp
-    debug_ "git instaweb --http=webrick stop"
     dirStopServe
+    debug_ "git instaweb --http=webrick stop"
 
 handleProjectDir :: IO ()
 handleProjectDir = getPublicDir >>= putText . format fp
 
-dirServe :: IO ()
-dirServe = do
-  processId <- Process.forkProcess $ Warp.run 3000 (WaiStatic.staticApp (WaiStatic.defaultWebAppSettings "."))
+dirServe :: Turtle.FilePath -> IO ()
+dirServe pubdir = do
+  processId <- Process.forkProcess $
+    debug_ $ format ("git daemon --reuseaddr --export-all --base-path="%fp%" "%fp) pubdir pubdir
   gpmDataDir <- getGPMDataDir
   inDir gpmDataDir $ do
     mktree "procs"
@@ -135,6 +134,6 @@ dirStopServe = do
   inDir gpmDataDir $ do
     pidtxt <- readTextFile ("procs" </> "gitServePID")
     if Text.null pidtxt
-      then putErrText "The git server doesn't appear to be running"
+      then putErrText "git daemon doesn't appear to be running"
       else debug_ ("kill " <> pidtxt)
 

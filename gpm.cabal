@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5bfe1aa5fe45c81553fa282f889cbe95ef3bbfd9d254f8a67458609998b15f9a
+-- hash: d9338d9561ff06dc6d13e3df5b3985256d508cfa09d153b26fa2eaf00dff864f
 
 name:           gpm
 version:        0.1.0.0
@@ -46,9 +46,6 @@ library
     , text
     , turtle
     , unix
-    , wai
-    , wai-app-static
-    , warp
   default-language: Haskell2010
 
 executable gpm
@@ -71,7 +68,4 @@ executable gpm
     , text
     , turtle
     , unix
-    , wai
-    , wai-app-static
-    , warp
   default-language: Haskell2010

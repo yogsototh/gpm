@@ -33,9 +33,6 @@ dependencies:
 - text
 - turtle
 - unix
-- wai
-- wai-app-static
-- warp
 library:
   source-dirs: src
 executables:
