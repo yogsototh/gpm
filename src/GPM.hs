@@ -27,7 +27,7 @@ gpm = do
    Init              -> Init.init
    NewIssue issueOpt -> inGPM (Issue.handleNewIssue issueOpt)
    Review reviewCmd  -> inGPM (Review.handleReview reviewCmd)
-   Serve serveCmd    -> inGPM (Serve.handleServe serveCmd)
+   Serve serveCmd    -> Serve.handleServe serveCmd
    Hooks hooksCmd    -> inGPM (Hooks.handleHooks hooksCmd)
 
 data Command = Init
