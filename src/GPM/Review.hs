@@ -43,15 +43,21 @@ data ReviewCommand = ReviewStart ReviewOptions
 -- | init gpm branch to handle reviews
 init :: IO ()
 init = do
-  green "* Init Reviews support"
-  let fic = "reviews" </> "write-contributing-yogsototh.org"
-  mktree "reviews"
-  putText $ format ("* "%fp) fic
+  green "* reviews.org"
+  putText "    create some example review for inspiration"
+  let reviewDir = "reviews"
+  mktree reviewDir
+  let fic = reviewDir </> "write-contributing-yogsototh.org"
+  putText $ format ("      "%fp) fic
   writeFile (toS (format fp fic)) $(embedStringFile "templates/review.org")
-  debug_ "git add reviews"
-  mktree "templates"
-  writeFile "templates/new-review.org" $(embedStringFile "templates/new-review.org")
-  debug_ "git add templates"
+  debug_ (toS (format ("git add "%fp) reviewDir))
+  putText "    create some review templates"
+  let templateDir = "templates"
+      templateFic = templateDir </> "new-review.org"
+  mktree templateDir
+  writeFile (toS (format fp templateFic)) $(embedStringFile "templates/new-review.org")
+  putText $ format ("      "%fp) templateFic
+  debug_ (toS (format ("git add "%fp) templateDir))
 
 -- | Command Line Options
 data ReviewOptions = ReviewOptions

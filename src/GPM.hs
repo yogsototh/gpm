@@ -9,7 +9,7 @@ Maintainer  : yann.esposito@gmail.com
 module GPM
 where
 
-import           Protolude   hiding (stdout)
+import           Protolude
 import           Turtle
 
 

@@ -20,18 +20,24 @@ module GPM.Helpers
   )
 where
 
-import           Protolude        hiding (die)
+import           Protolude           hiding (die)
 import           Turtle
 
-import qualified Control.Foldl    as Fold
-import qualified System.Directory as Directory
+import qualified Control.Foldl       as Fold
 import qualified System.Console.ANSI as Console
+import qualified System.Directory    as Directory
+import qualified System.IO
 
 -- | execute a shell script and return the last line as text
 -- but also log the command to the console to minimize surprise
 debug :: Text -> IO (Maybe Text)
 debug cmd = do
-  putErrText cmd
+  Console.setSGR [ Console.SetColor Console.Foreground Console.Dull Console.Cyan
+                 , Console.SetItalicized True
+                 ]
+  putErrText ("    " <> cmd)
+  Console.setSGR [ Console.Reset ]
+  System.IO.hFlush System.IO.stderr
   fmap lineToText <$> _foldIO (inshell cmd empty) (Fold.generalize Fold.last)
 
 -- | execute a shell script without stdin and without handling output
@@ -78,11 +84,10 @@ inDir workDir action = do
 
 putTextColor :: Console.Color -> Text -> IO ()
 putTextColor color t = do
-  Console.setSGR [ Console.SetColor Console.Foreground Console.Dull color
-                 , Console.SetConsoleIntensity Console.NormalIntensity
-                 ]
+  Console.setSGR [ Console.SetColor Console.Foreground Console.Dull color ]
   putText t
-  Console.setSGR [Console.Reset]
+  Console.setSGR [ Console.Reset ]
+  System.IO.hFlush System.IO.stdout
 
 green :: Text -> IO ()
 green = putTextColor Console.Green
