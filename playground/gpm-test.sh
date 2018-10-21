@@ -36,7 +36,7 @@ subtitle "Cleaning Up"
 gpm serve stop
 
 subtitle "Create Project $testproj"
-mkdir $testproj
+mkdir -p $testproj
 pushd $testproj
 echo "README 1" > README
 git init .
@@ -77,6 +77,9 @@ pushd $testproj2
 
 subtitle "git clone"
 git clone git://localhost:9418/${prjname}.git $testproj2
+
+subtitle "gpm init (into the cloned repo)"
+gpm init
 
 subtitle "gpm serve stop"
 gpm serve stop

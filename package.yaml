@@ -32,7 +32,6 @@ dependencies:
 - protolude
 - text
 - turtle
-- unix
 library:
   source-dirs: src
 executables:

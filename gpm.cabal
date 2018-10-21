@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d9338d9561ff06dc6d13e3df5b3985256d508cfa09d153b26fa2eaf00dff864f
+-- hash: 04bfdb9ffa855881f6cd6cc09bf3b494a2107ded6cc33c41699546a12526099e
 
 name:           gpm
 version:        0.1.0.0
@@ -45,7 +45,6 @@ library
     , protolude
     , text
     , turtle
-    , unix
   default-language: Haskell2010
 
 executable gpm
@@ -67,5 +66,4 @@ executable gpm
     , protolude
     , text
     , turtle
-    , unix
   default-language: Haskell2010

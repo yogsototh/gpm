@@ -14,7 +14,7 @@ module GPM.Serve
 where
 
 -- | Generic Import
-import           Protolude                      hiding (die, stdout, (%), (<.>))
+import           Protolude                      hiding (die, (%), (<.>))
 import           Turtle
 
 -- | Local Imports
@@ -23,7 +23,6 @@ import           GPM.Helpers                    (debug, debug_, getGPMDataDir,
 
 -- | External Lib Imports
 import qualified Data.Text                      as Text
-import qualified System.Posix.Process           as Process
 
 -- | Retrieve a public dir to serve git repositories
 getPublicDir :: IO Turtle.FilePath
@@ -121,18 +120,20 @@ handleProjectDir = getPublicDir >>= putText . format fp
 
 dirServe :: Turtle.FilePath -> IO ()
 dirServe pubdir = do
-  processId <- Process.forkProcess $
-    debug_ $ format ("git daemon --reuseaddr --export-all --base-path="%fp%" "%fp) pubdir pubdir
   gpmDataDir <- getGPMDataDir
-  inDir gpmDataDir $ do
-    mktree "procs"
-    writeTextFile ("procs" </> "gitServePID") (show processId)
+  let pidfiledir = gpmDataDir </> "procs"
+  debug_ $
+    format ("git daemon --detach --pid-file="%fp
+            %" --reuseaddr --export-all --base-path="%fp%" "%fp)
+    (pidfiledir </> "gitServePID")
+    pubdir
+    pubdir
 
 dirStopServe :: IO ()
 dirStopServe = do
   gpmDataDir <- getGPMDataDir
   inDir gpmDataDir $ do
-    pidtxt <- readTextFile ("procs" </> "gitServePID")
+    pidtxt <- readTextFile (gpmDataDir </>"procs" </> "gitServePID")
     if Text.null pidtxt
       then putErrText "git daemon doesn't appear to be running"
       else debug_ ("kill " <> pidtxt)
