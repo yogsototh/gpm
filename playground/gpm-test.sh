@@ -13,14 +13,17 @@ title(){
 }
 
 prjname="testproj"
-testproj="/tmp/$prjname"
-testproj2="/tmp/testproj2"
+playgrounddir="/tmp/gpm-playground"
+testproj="$playgrounddir/$prjname"
+testproj2="$playgrounddir/testproj2"
 mkdir -p $testproj
 pushd $testproj
 
 title "CLEANING UP"
 [[ -d $testproj ]] && rm -rf $testproj
 [[ -d $testproj2 ]] && rm -rf $testproj2
+[[ -d ~/.local/share/gpm ]] && rm -rf ~/.local/share/gpm
+gpm serve stop
 
 title "CREATE PROJECT $testproj"
 mkdir $testproj

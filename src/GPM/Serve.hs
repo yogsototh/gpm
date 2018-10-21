@@ -100,7 +100,7 @@ handleUpdate _ = do
   pubPrjDir <- getPublicPrjDir
   inDir pubPrjDir $ do
     pwd >>= putText . format fp
-    debug_ "git fetch"
+    debug_ "git fetch --all"
 
 handleServeStart :: IO ()
 handleServeStart = do
