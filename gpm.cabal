@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2181d6cb75bcd17dab9a58fcfa594141af68c4c3e34050da6ce0beeb47bb7642
+-- hash: 04bfdb9ffa855881f6cd6cc09bf3b494a2107ded6cc33c41699546a12526099e
 
 name:           gpm
 version:        0.1.0.0
@@ -24,6 +24,7 @@ library
       GPM
       GPM.Docs
       GPM.Helpers
+      GPM.Hooks
       GPM.Init
       GPM.Issue
       GPM.Review

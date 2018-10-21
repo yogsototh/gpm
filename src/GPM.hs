@@ -14,6 +14,7 @@ import           Turtle
 
 
 import           GPM.Helpers (inGPM)
+import qualified GPM.Hooks   as Hooks
 import qualified GPM.Init    as Init
 import qualified GPM.Issue   as Issue
 import qualified GPM.Review  as Review
@@ -27,11 +28,13 @@ gpm = do
    NewIssue issueOpt -> inGPM (Issue.handleNewIssue issueOpt)
    Review reviewCmd  -> inGPM (Review.handleReview reviewCmd)
    Serve serveCmd    -> inGPM (Serve.handleServe serveCmd)
+   Hooks hooksCmd    -> inGPM (Hooks.handleHooks hooksCmd)
 
 data Command = Init
              | NewIssue Issue.IssueOptions
              | Review Review.ReviewCommand
              | Serve Serve.ServeCommand
+             | Hooks Hooks.HooksCommand
 
 parser :: Parser Command
 parser = subcommand "init" "Initialize gpm" (pure Init)
@@ -44,3 +47,6 @@ parser = subcommand "init" "Initialize gpm" (pure Init)
          <|> Serve <$> subcommand "serve"
                          "Serve the git to the web"
                          Serve.parseServeCommand
+         <|> Hooks <$> subcommand "hooks"
+                         "Handle hooks for this git repository"
+                         Hooks.parseHooksCommand

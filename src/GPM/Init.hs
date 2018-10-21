@@ -21,6 +21,7 @@ import           GPM.Helpers   (debug_, yellow)
 import qualified GPM.Issue     as Issue
 import qualified GPM.Review    as Review
 import qualified GPM.Serve     as Serve
+import qualified GPM.Hooks     as Hooks
 
 -- | Init a repository with a new empty branch named @gpm@
 init :: IO ()
@@ -30,6 +31,7 @@ init = do
   Issue.init
   Docs.init
   Review.init
+  Hooks.init
   Serve.init
   debug_ "git commit -m 'gpm initialized'"
   debug_ "git checkout master"
