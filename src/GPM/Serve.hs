@@ -66,7 +66,7 @@ init = do
   whenM (testdir publicProjectDir) $ do
     putText (format ("rmtree " % fp) publicProjectDir)
     rmtree publicProjectDir
-  debug_ (format ("git clone --bare "%fp%" "%fp)
+  debug_ (format ("git clone --mirror "%fp%" "%fp)
                  repoRoot
                  publicProjectDir)
   inDir publicProjectDir $ do
