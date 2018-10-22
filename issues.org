@@ -195,3 +195,12 @@ I can't make it work! Please fix it please.
      Describe how to test. If something fail, describe which test is failing,
      etc...
 **** TODO add a new configuration value                            :task:ops:
+
+
+**** [#B] TODO Support git pages                             ::pages::
+   :PROPERTIES:
+   :CREATOR:  Yann Esposito (Yogsototh)
+   :BRANCH:   master
+   :REQUESTED_REVIEWERS: 
+   :END:
+Create a directory along the git directory that serve all org files (typically doing pandoc --standalone --css brutalist.css x.org &gt; x.html) and also provide an index.html file that list all structure.
