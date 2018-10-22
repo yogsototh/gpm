@@ -21,11 +21,11 @@ where
 import           Protolude        hiding (ask, die, stdout, (%))
 import           Turtle
 
+import           GPM.Helpers      (debug_, getGPMDataDir, getGitUser, green)
+
 import qualified Data.Char        as Char
 import           Data.FileEmbed   (embedStringFile)
 import qualified Data.Text        as Text
-import           GPM.Helpers      (debug_, getGPMDataDir, getGitUser, green,
-                                   green)
 import qualified System.Directory as Directory
 import           Text.Mustache
 

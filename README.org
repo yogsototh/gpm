@@ -8,7 +8,7 @@ everything...
 
 * Git Project Manager
 
-Put a project management tool in git.
+Put a project management tool in your git repository.
 
 In general each project in git also need a lot of meta data informations.
 Most of them related to project management:
@@ -28,6 +28,180 @@ thousands of small commit related to project management.
 An easy way to have best of both world is simply to create a branch
 dedicated to project management only.
 
+** Installation
+
+For now you should simply clone it, install stack and build it.
+
+** Usage
+
+*** Quick
+
+#+BEGIN_SRC
+> cd $HOME/my-git-repo
+> gpm init
+...
+> gpm new-issue -i
+...
+> gpm serve start
+...
+> open http://localhost:1234
+...
+> cd /tmp; git clone git://localhost:9418/my-git-repo.git my-git-repo
+...
+> cd my-git-repo
+> git checkout -b new-feature
+> ... /hack/ ...
+> git commit
+> ...
+#+END_SRC
+
+*** Detailled
+
+The easiest way would be to launch =gpm= or =gpm --help= to have the list of
+commands.
+
+#+BEGIN_SRC
+Git Project Manager
+
+Usage: gpm (init | new-issue | review | serve | hooks)
+
+Available options:
+  -h,--help                Show this help text
+
+Available commands:
+  init                     Initialize gpm
+  new-issue                Create a new Issue
+  review                   Review (use current branch by default)
+  serve                    Serve the git to the web
+  hooks                    Handle hooks for this git repository
+#+END_SRC
+
+*** Init
+
+#+BEGIN_SRC
+> gpm init --help
+Usage: gpm init
+  Initialize gpm
+
+Available options:
+  -h,--help                Show this help text
+#+END_SRC
+
+*** New Issue
+
+#+BEGIN_SRC
+> gpm new-issue --help
+Usage: gpm new-issue [-i|--interactive] [-p|--priority PRIORITY]
+                     [-s|--status STATUS] [-t|--title TITLE]
+                     [-c|--creator CREATOR] [-b|--branch BRANCH]
+                     [-g|--tags TAGS] [-a|--assignee ASSIGNEE]
+                     [-r|--reviewers REVIEWERS] [-d|--descr DESCR]
+  Create a new Issue
+
+Available options:
+  -i,--interactive         Interactive mode
+  -p,--priority PRIORITY   Priority A,B,C
+  -s,--status STATUS       The status of the issue (TODO, QUESTION, ...)
+  -t,--title TITLE         The status title
+  -c,--creator CREATOR     The user that created the issue
+  -b,--branch BRANCH       The branch related to the issue
+  -g,--tags TAGS           comma separated tags
+  -a,--assignee ASSIGNEE   Assignee
+  -r,--reviewers REVIEWERS comma separated reviewers
+  -d,--descr DESCR         Long issue description
+  -h,--help                Show this help text
+#+END_SRC
+
+To edit an issue, manually change your branch to =gpm= and edit the =issues.org=
+file.
+
+*** Review
+
+You can start a review, it will handle the task of creating a file where you can
+annotate your comments. It will then create a file in
+=reviews/<branch-name>-<reviewer>.org=.
+
+The review process is quite open even if some helpers are provided.
+
+#+BEGIN_SRC
+> gpm review --help
+Usage: gpm review (accept | feedback | question | request-change | reject |
+                  start | end | show | retrieve)
+  Review (use current branch by default)
+
+Available options:
+  -h,--help                Show this help text
+
+Available commands:
+  accept                   Accept the merge
+  feedback                 Provide a feedback
+  question                 Ask a question
+  request-change           Request some Changes to merge
+  reject                   Reject the merge
+  start                    Start a new review
+  end                      End a review
+  show                     Show the review
+  retrieve                 Retrieve all the reviews for current branch
+#+END_SRC
+
+*** Serve
+
+Expose a minimal read-only web interface of your repositories.
+And serve the repository using =git= protocol.
+
+- Web interface http://localhost:1234
+- Git repository =git://localhost:9418/your-repo-name=
+
+#+BEGIN_SRC
+> gpm serve --help
+Usage: gpm serve (start | stop | update | path)
+  Serve the git to the web
+
+Available options:
+  -h,--help                Show this help text
+
+Available commands:
+  start                    Start to serve all gpm tracked repositories
+  stop                     Stop to serve all gpm tracked repositories
+  update                   Update the served git repository
+  path                     Show the path of the bare repository
+#+END_SRC
+
+*** Hooks
+
+Synchronize hooks in all your repositories.
+
+#+BEGIN_SRC
+> gpm hooks --help
+Usage: gpm hooks sync
+  Handle hooks for this git repository
+
+Available options:
+  -h,--help                Show this help text
+
+Available commands:
+  sync                     Synchronize hooks from gpm branch
+#+END_SRC
+
+* Considerations
+
+One of the goal of this project is to handle a lot of things handled by github
+but with minimality. Everything used here is open source and really easy to use.
+
+** No Push?
+
+I tend to prefer pull request only, that is far easier not to handle identities
+through web system. There is a manually provided hooks to only accepts push/pull
+if all the commit are signed via a list of authorized GPG keys.
+
+** Ops?
+
+Managing the CI/CD through another 3rd party parallel branch is not simple.
+Mainly part of the CI/CD script directly depends on some code change, and as so,
+should be present in the dev branches. But also part of the code should be
+independant. So the question on how to handle ops code is still open for me.
+
+* About
 ** Project Management Format
 
 As one goal is also to provide minimal friction I wouldn't advise to use
@@ -146,54 +320,54 @@ Starting with only basic features (TODO / INPROGRESS / DONE)
 Then, priority, multiple users, tags, many meta infos by task.
 Task organized as tree of tasks and subtasks.
 
-* Why is this important?
-  It is very important to put all those meta-data about your project inside the
-  repository because:
-- you are no more dependant on any 3rd party tool to manage your project
-- you can easily change how you host your git project
-- anyone with just a text editor can manage those tasks.
+** Why is this important?
+   It is very important to put all those meta-data about your project inside the
+   repository because:
+ - you are no more dependant on any 3rd party tool to manage your project
+ - you can easily change how you host your git project
+ - anyone with just a text editor can manage those tasks.
+** After that
 
-* After that
+ A goal is to complete the =gpm= tool with a few other one all isolated but which
+ could all work together.
 
-A goal is to complete the =gpm= tool with a few other one all isolated but which
-could all work together.
+ - hook handling (so all your team member can share nice hooks, for example,
+   preformat commit messages, launch tests before publishing a pull request,
+   etc...)
+ - minimal web interface to navigate your project management related files,
+   commits, branches, etc...
+ - identity handling so hand in hand with hook handle and web interface provide
+   the ability to manage how contributor can access your tool
 
-- hook handling (so all your team member can share nice hooks, for example,
-  preformat commit messages, launch tests before publishing a pull request,
-  etc...)
-- minimal web interface to navigate your project files, commits, branches, etc...
-- identity handling so hand in hand with hook handle and web interface provide
-  the ability to manage how contributor can access your tool
+*** Identfy users, allow access and trust them
 
-** Identfy users, allow access and trust them
+ With this system it will be more about a pull from other than wait for them to push.
+ The identity system should be decentralized and based on GPG keys.
 
-With this system it will be more about a pull from other than wait for them to push.
-The identity system should be decentralized and based on GPG keys.
+ Mainly each user should sign their commit with their GPG key.
+ Each user could then keep serving their local repo (see instaweb).
 
-Mainly each user should sign their commit with their GPG key.
-Each user could then keep serving their local repo (see instaweb).
+ And more importantly, there will be "known" repositories, known packages and libraries.
+ It will be enough to sign all those activities and to publish them on some page automatically.
+ Or to search for the fingerprint of the GPG on the web via a search engine.
+ You'll then see all the activities related to that key.
 
-And more importantly, there will be "known" repositories, known packages and libraries.
-It will be enough to sign all those activities and to publish them on some page automatically.
-Or to search for the fingerprint of the GPG on the web via a search engine.
-You'll then see all the activities related to that key.
+ Typically:
+ - OSS contributions
+ - web blog articles
+ - micro blog messages
+ - comments
+ - etc...
 
-Typically:
-- OSS contributions
-- web blog articles
-- micro blog messages
-- comments
-- etc...
+ One great advantage of that, is that each user will be able to manage different
+ GPG key pairs for dealing with different aspect of their lives.
 
-One great advantage of that, is that each user will be able to manage different
-GPG key pairs for dealing with different aspect of their lives.
-
-This solution won't need common consensus network à la bitcoin, or any
-decentralized smart contract system. And from my point of view, this is a lot
-better. Because most of those decentralized system want you to adopt their
-centralized system, their software, their ecosystem. While just providing a
-website with a list of links where the user could simply grab them and check all
-link correspond to a signed activies is clearly totally open source compliant
-and does not require any software choice on any parties. This is yet again, just
-a text file somewhere and a simple web service. With minimal tooling that could
-be coded in any language in not much time.
+ This solution won't need common consensus network à la bitcoin, or any
+ decentralized smart contract system. And from my point of view, this is a lot
+ better. Because most of those decentralized system want you to adopt their
+ centralized system, their software, their ecosystem. While just providing a
+ website with a list of links where the user could simply grab them and check all
+ link correspond to a signed activies is clearly totally open source compliant
+ and does not require any software choice on any parties. This is yet again, just
+ a text file somewhere and a simple web service. With minimal tooling that could
+ be coded in any language in not much time.

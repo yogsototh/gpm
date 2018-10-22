@@ -1,4 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TemplateHaskell   #-}
 {-|
 module      : GPM.Serve
 Description : GPM review related commands
@@ -23,6 +24,7 @@ import           GPM.Helpers                    (debug, debug_, getGPMDataDir,
 
 -- | External Lib Imports
 import qualified Data.Text                      as Text
+import           Data.FileEmbed (embedStringFile)
 
 -- | Retrieve a public dir to serve git repositories
 getPublicDir :: IO Turtle.FilePath
@@ -66,9 +68,11 @@ init = do
   debug_ (format ("git clone --mirror "%fp%" "%fp)
                  repoRoot
                  publicProjectDir)
-  inDir publicProjectDir $ do
-    mv ("hooks" </> "post-update.sample") ("hooks" </> "post-update")
-    _ <- chmod executable ("hooks" </> "post-update")
+  inDir (publicProjectDir </> "hooks") $ do
+    mv "post-update.sample" "post-update"
+    _ <- chmod executable "post-update"
+    writeFile "pre-receive-hooks" $(embedStringFile "templates/pre-receive-hooks")
+    _ <- chmod executable "pre-receive-hooks"
     debug_ "git update-server-info"
 
 -- | Serve command
@@ -121,11 +125,10 @@ handleProjectDir = getPublicDir >>= putText . format fp
 dirServe :: Turtle.FilePath -> IO ()
 dirServe pubdir = do
   gpmDataDir <- getGPMDataDir
-  let pidfiledir = gpmDataDir </> "procs"
   debug_ $
     format ("git daemon --detach --pid-file="%fp
             %" --reuseaddr --export-all --base-path="%fp%" "%fp)
-    (pidfiledir </> "gitServePID")
+    (gpmDataDir </> "git-daemon-pid")
     pubdir
     pubdir
 
@@ -133,7 +136,7 @@ dirStopServe :: IO ()
 dirStopServe = do
   gpmDataDir <- getGPMDataDir
   inDir gpmDataDir $ do
-    pidtxt <- readTextFile (gpmDataDir </>"procs" </> "gitServePID")
+    pidtxt <- readTextFile (gpmDataDir </> "git-daemon-pid")
     if Text.null pidtxt
       then putErrText "git daemon doesn't appear to be running"
       else debug_ ("kill " <> pidtxt)
