@@ -85,6 +85,7 @@ subtitle "gpm serve stop"
 gpm serve stop
 popd
 
-echo "--------"
+set +x
+echo "------------------------------------"
 echo "$testproj"
 echo "$testproj2"
