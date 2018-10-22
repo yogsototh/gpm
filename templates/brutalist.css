@@ -1,0 +1,209 @@
+/* antidesign CSS
+author: Yann Esposito
+copyright: 2018 © Yann Esposito
+*/
+html, body, input, button, pre, textarea {
+    font-size: 15px;
+    font-family: Menlo, Inconsolata, monospace;
+    text-rendering: optimizeLegibility;
+    background: white;
+}
+body {
+    color: #444;
+    background: white;
+    max-width: 50em;
+    margin: auto;
+    border-left: solid 1em;
+    padding: 1em;
+    margin: 0 auto;
+    line-height: 1.5em; }
+
+/* minimal modern colors */
+a { color: #002ea2; font-weight: 700; text-decoration: none; }
+a:hover { border-bottom: solid; }
+a:visited { color: SlateBlue; }
+
+ul { padding-left: 1em;
+     list-style-type: none; }
+
+ul ul { border-left: 2px solid #CCC; }
+ul ul { margin-left: 1.5ex; }
+
+code { background: #EEE;
+       padding: 2px; }
+
+blockquote {
+    border-left: solid 1em LightGray;
+    margin-left: 0px;
+    padding-left: 1em; }
+pre { font-size: .8em;
+      padding: 5px;
+      overflow: scroll;
+      margin: 0;
+    }
+pre::after,pre::before { content: "~~~~~~";
+                         display: block;
+                         font-size: 1.25em;
+                         opacity: 0.3; }
+
+/* forms, inputs, buttons */
+/* buttons */
+input,textarea,button { font-size: 0.8em; }
+input:focus,textarea:focus { outline: none;
+                             color: #002ea2;
+                             background-color: #eaf4ff;
+                             border-color: DodgerBlue; }
+input,textarea { padding: 4px;
+                 border: none;
+                 background: #FAFAFA;
+                 border: solid 1px LightGray;
+                 vertical-align: top;
+                 min-width: 65%; }
+textarea { min-height: 13em; }
+*:focus { outline: solid 2px DodgerBlue; }
+
+// div.form { display: grid;
+//            grid-template-columns: max-content auto;
+//            gird-gap: 5px;
+//          }
+
+.block { display: inline-block; }
+
+label {
+    display: inline-block;
+    min-width: 8em;
+    line-height: 2em;
+    margin-right: 1ex;
+}
+
+/* colors */
+button.red { color: black; }
+button.red:hover { color: #C5283D; }
+button.red:hover::before { color: #C5283D;}
+button.red:hover::after { color: #C5283D; }
+
+button.orange { color: black; }
+button.orange:hover { color: #EE6600; }
+button.orange:hover::before { color: #EE6600; }
+button.orange:hover::after { color: #EE6600; }
+
+button.yellow { color: black; }
+button.yellow:hover { color: #AA6600; }
+button.yellow:hover::before { color: #AA6600; }
+button.yellow:hover::after { color: #AA6600; }
+
+button.green { color: black; }
+button.green:hover { color: green; }
+button.green:hover::before { color: green; }
+button.green:hover::after { color: green; }
+
+button.cyan { color: black; }
+button.cyan:hover { color: DodgerBlue; }
+button.cyan:hover::before { color: DodgerBlue; }
+button.cyan:hover::after { color: DodgerBlue; }
+
+button.blue { color: black; }
+button.blue:hover { color: #002ea2; }
+button.blue:hover::before { color: #002ea2; }
+button.blue:hover::after { color: #002ea2; }
+
+button.violet { color: black; }
+button.violet:hover { color: #CC00FF; }
+button.violet:hover::before { color: #CC00FF; }
+button.violet:hover::after { color: #CC00FF; }
+
+button.magenta { color: black; }
+button.magenta:hover { color: #CC0066; }
+button.magenta:hover::before { color: #CC0066; }
+button.magenta:hover::after { color: #CC0066; }
+
+button { font-weight: bold;
+         padding: .1em .1em;
+         background: white;
+         border: none;
+         margin-right: 6px;
+         margin-bottom: 6px;
+       }
+button::before { content: "["; opacity: 0.3; }
+button::after { content: "]"; opacity: 0.3; }
+button:hover { cursor: pointer; text-decoration: underline; }
+
+button:active { color: #C5283D; border-color: #C5283D;  }
+button:disabled { color: Gray; }
+button:disabled:hover { color: Gray; text-decoration: none; }
+button:disabled:hover::before { color: Gray; }
+button:disabled:hover::after { color: Gray; }
+
+/* == tables === */
+
+table { max-width: 100%;
+        overflow: scroll; }
+th { border-bottom: solid 2px;
+     padding: 0 1em; }
+td { border-bottom: dotted 1px LightGray;
+     overflow: scroll;
+     padding: 0 1em; }
+
+/* == Alerts == */
+.alerts { position: fixed;
+          top: 20px;
+          z-index: 100000;
+          }
+.alert { padding: 0.2em 1em;
+         border: solid 2px black;
+         margin: 2px;
+         position: relative;
+       }
+.alert:hover { cursor: pointer; }
+.alert::after { content: " ×";
+                opacity: 0.5;
+                display: inline-block;
+                top: -5px;
+                right: 2px;
+                position: absolute; }
+.alert:hover::after { content: " ×"; opacity: 1; }
+.alert.error { background-color: #C5283D; color: white; }
+.alert.warn { background-color: #AA6600; color: white; }
+.alert.info { background-color: #002ea2; color: white; }
+
+.small { font-size: .8em; }
+.discrete { opacity: 0.5; }
+.calm > * { opacity: 0.5; }
+.calm > *:hover { opacity: 1; }
+
+.overlay { position: fixed;
+           display: flex;
+           justify-content: center;
+           width: 100%;
+           height: 100%;
+           top: 0;
+           left: 0;
+           right: 0;
+           bottom: 0;
+           background-color: rgba(0,0,0,0.5);
+           z-index: 2;
+           cursor: pointer;
+           }
+.popin, .box {
+    border-top: solid 2px #000;
+    border-left: solid 2px #000;
+    border-bottom: solid 4px #000;
+    border-right: solid 4px #000;
+    box-shadow: 8px 8px #000;
+    background: white;
+    padding: 2em;
+    margin: 0 0 8px 0;
+    cursor: auto;
+}
+.close { position: relative;
+         top: -4em;
+         right: -4em;
+         text-align: center;
+         cursor: pointer; /* Add a pointer on hover */
+       }
+
+/* Specific */
+.c20 { display: inline-block; min-width: 8em; }
+.c45 { display: inline-block; min-width: 13.5em; }
+
+.login { padding-left: 1em; border-left: 5px solid #CCC; line-height: 1.25em; }
