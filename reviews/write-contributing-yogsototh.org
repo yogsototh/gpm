@@ -1,0 +1,8 @@
+* FEEDBACK
+  [[file:~/y/gpm/gpm::initDocs]]
+* QUESTION What about creating a new branch for doc?
+  [[file:~/y/gpm/gpm::initDocs]]
+* FEEDBACK  something
+  [[file:~/y/gpm/gpm::mkNewEmptyBranch%20"gpm"]]
+* QUESTION some question
+  [[file:~/y/gpm/gpm::initDocs]]
