@@ -191,8 +191,14 @@ but with minimality. Everything used here is open source and really easy to use.
 ** No Push?
 
 I tend to prefer pull request only, that is far easier not to handle identities
-through web system. There is a manually provided hooks to only accepts push/pull
-if all the commit are signed via a list of authorized GPG keys.
+through web authentication mechanism.
+
+I think the best decentralized system to handle identities are GPG keys.
+
+And we are lucky, you can sign all your commits with GPG.
+
+And to promote that system, this repository provide a hooks to only accepts
+push/pull if all the commit are signed via a list of authorized GPG keys.
 
 ** Ops?
 
@@ -200,6 +206,23 @@ Managing the CI/CD through another 3rd party parallel branch is not simple.
 Mainly part of the CI/CD script directly depends on some code change, and as so,
 should be present in the dev branches. But also part of the code should be
 independant. So the question on how to handle ops code is still open for me.
+
+My current idea would be to:
+
+- Have a sub directory =ops/= along the source code that should contains:
+  - a =test.sh= script: launch the tests, if it contains the args =all= then it
+    should perform classical tests AND integration tests (it is up to your code
+    not to perform integration tests by default).
+  - a =build.sh= script able to =build= and copy the resul in a =ops/dist/= dir.
+
+So that would kind of make the process kind of "standard" for CI. And it will be
+easy to write a hook to perform a test and a build when necessary. Typically
+after fetching a new branch suitable for pull request.
+
+Regarding deployement (and CD). It should only use the result of the build (in
+=ops/dist/=). And take care of all deployment details. Certainly the code taking
+of those details could have its place in a specific =branch= or in a directory
+in the =gpm= branch.
 
 * About
 ** Project Management Format
