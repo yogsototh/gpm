@@ -21,7 +21,7 @@ subtitle() {
 prjname="testproj"
 playgrounddir="/tmp/gpm-playground"
 testproj="$playgrounddir/$prjname"
-testproj2="$playgrounddir/cloned-$prjname"
+clonedproj="$playgrounddir/cloned-$prjname"
 
 # display all commands
 set -x
@@ -31,7 +31,7 @@ title "INIT"
 
 subtitle "Cleaning Up"
 [[ -d $testproj ]] && rm -rf $testproj
-[[ -d $testproj2 ]] && rm -rf $testproj2
+[[ -d $clonedproj ]] && rm -rf $clonedproj
 [[ -d ~/.local/share/gpm ]] && rm -rf ~/.local/share/gpm
 gpm serve stop
 
@@ -50,8 +50,7 @@ gpm init
 title "ISSUES"
 
 subtitle "gpm new-issue"
-gpm new-issue -t "issue-1" -p "A"
-
+gpm new-issue -t "better README" -p "A" -b better-readme -t doc
 
 # ------------------------------------------------------------------------------
 title "HOOKS"
@@ -77,21 +76,65 @@ popd
 # ------------------------------------------------------------------------------
 title "CLONE"
 
-mkdir -p ${testproj2:h}
-pushd ${testproj2:h}
+mkdir -p ${clonedproj:h}
+pushd ${clonedproj:h}
 subtitle "git clone"
-git clone git://localhost:9418/${prjname}.git $testproj2
+git clone git://localhost:9418/${prjname}.git $clonedproj
 
+# - - - - - - - - - - - - - - - - - - - - - - - -
+pushd $clonedproj # Cloned project
 subtitle "gpm init (into the cloned repo)"
 gpm init
 
-subtitle "review"
+subtitle "Pull request"
+git checkout -b better-readme
 echo "Some Edit" >> README
+git add README
+git commit -m "made a better README"
 
-gpm review start
-gpm review request-change -t add more infos please
+popd
+# - - - - - - - - - - - - - - - - - - - - - - - -
 
-git remote add dev $testproj
+subtitle "Review"
+
+pushd $testproj
+git remote add dev $clonedproj
+
+git fetch dev
+git checkout better-readme
+
+# look into README
+# better with org-anotate-file `SPC o a`
+# gpm review start
+# gpm review end
+gpm review request-change -t "add more infos please"
+
+popd
+
+# - - - - - - - - - - - - - - - - - - - - - - - -
+pushd $clonedproj
+gpm review retrieve
+echo "More infos" >> README
+git add README
+git commit -m "added more infos"
+popd
+# - - - - - - - - - - - - - - - - - - - - - - - -
+
+pushd $testproj
+git checkout better-readme
+git pull
+git review accept -t "LGTM"
+git co master
+git merge better-readme
+gpm serve update
+popd
+
+# - - - - - - - - - - - - - - - - - - - - - - - -
+pushd $clonedproj
+git co master
+git pull
+popd
+# - - - - - - - - - - - - - - - - - - - - - - - -
 
 # ------------------------------------------------------------------------------
 title "STOP SERVE"
@@ -103,4 +146,4 @@ popd
 set +x
 echo "------------------------------------"
 echo "$testproj"
-echo "$testproj2"
+echo "$clonedproj"
