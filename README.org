@@ -259,7 +259,7 @@ I was surprised to discover that with org-mode and plain text file you can
 go a very long way toward project management organisation:
 
 - issues, bug tracking, comments
-- handling with minimal firction code reviews
+- handling with minimal friction code reviews
 - ability to integrate with any organization workflow you would like:
   - basic trello
   - scrum

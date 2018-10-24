@@ -179,14 +179,52 @@ Gitlab is a better alternative but:
 - docs goes in =wiki.org=
 - serve goes in your XDG data dir (standard)
 
-*** git is already batteries included
+*** git is awesome!
+
+battery included:
 
 - =git= hooks
 - =git instaweb=
 - =git daemon=
 
+*** org-mode is awesome
+
+- TODO list oriented document convention
+- Extremely versatile:
+  - issues, bug tracking, comments
+  - handling with minimal friction code reviews =org-annotate-file=
+  - workflows:
+    - basic trello (TODO, IN-PROGRESS, DONE)
+    - scrum (EPIC / USER-STORY / etc...)
+    - kanban:
+      - EPIC with different statuses (prep, specified,etc..), comments
+      - user stories with evaluation, different status, comments
+      - QA status
+      - Ops status
+
+* DEMO
+
 * Conclusion
-** Decentralized Web
+*** Proof of concept
+
+- =gpm= is a proof of concept but so simple its already usable
+- git clone should provide most of your projects data
+- don't enforce tooling on your team, use text files
+- I encourage your to use org-mode its awesome! /REALLY!/
+  - vimer => spacemacs or doom-emacs
+  - IDE => switch to spacemacs eat the bullet!
+  - you still can edit org-mode with notepad
+
+*** Going further: Decentralized Web
+
+- the Internet was thought to be decentralized
+- centralization of services made lot of things easy, it was fair at first
+- but made us dependant and the balance is no more fair
+- it is time to re-decentralize the Internet and take back control
+- we shouldn't be dependant of private services
+- we should pay private service, but they should adapt to us, not the other way
+  around
+
 *** Decentralized Authentication: IndieAuth
 
 - one of your online identities = one domaine name

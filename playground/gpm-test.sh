@@ -21,7 +21,7 @@ subtitle() {
 prjname="testproj"
 playgrounddir="/tmp/gpm-playground"
 testproj="$playgrounddir/$prjname"
-testproj2="$playgrounddir/testproj2"
+testproj2="$playgrounddir/cloned-$prjname"
 
 # display all commands
 set -x
@@ -52,6 +52,7 @@ title "ISSUES"
 subtitle "gpm new-issue"
 gpm new-issue -t "issue-1" -p "A"
 
+
 # ------------------------------------------------------------------------------
 title "HOOKS"
 
@@ -72,14 +73,28 @@ subtitle "gpm serve start"
 gpm serve update
 gpm serve start
 popd
-mkdir $testproj2
-pushd $testproj2
 
+# ------------------------------------------------------------------------------
+title "CLONE"
+
+mkdir -p ${testproj2:h}
+pushd ${testproj2:h}
 subtitle "git clone"
 git clone git://localhost:9418/${prjname}.git $testproj2
 
 subtitle "gpm init (into the cloned repo)"
 gpm init
+
+subtitle "review"
+echo "Some Edit" >> README
+
+gpm review start
+gpm review request-change -t add more infos please
+
+git remote add dev $testproj
+
+# ------------------------------------------------------------------------------
+title "STOP SERVE"
 
 subtitle "gpm serve stop"
 gpm serve stop
