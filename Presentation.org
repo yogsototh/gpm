@@ -3,7 +3,6 @@
 #+Date: <2018-10-25 Thu>
 
 ** =git= is a *Distributed* Concurrent Versions System
-
 ** GitHub is a *Centralized* =git= host
 * Can we do without Github™?
 *** Betteridge's law
@@ -60,7 +59,7 @@ From their website (in that order):
   - /Documentation/: github pages, wiki, ...à
   - /Code Hosting/: all your code in one place, tree view, blame view, etc...
 
-***  GitHub™: Metas
+*** GitHub™: Metas
 
 Most GitHub™ features put data in their own internal closed representation:
 
@@ -76,7 +75,9 @@ Ex: migrate to Gitlab
 *** GitHub™ is great today but can suck tomorrow
 
 - /bloatware/
-  remember digg, readitlater? think about the latest reddit design?
+  remember digg, readitlater?
+- /downgradeware/
+  Swagger-UI v3 (v2 is neat), reddit new redesign (looks better, but slow)
 - /payware/
   You rely on our feature, but now, we want you to move or to pay. Fair ;)
 - /crapware/
@@ -92,34 +93,35 @@ Were you already forced to:
 - use PowerPoint? Excel? Word?
 - code in PHP? in Java?
 - work on windows? Harder need to ssh to UNIX machines?
-- use notepad instead of vim?
-- use Eclipse instead of emacs?
+- use Eclipse instead of vim/emacs?
+- use a super complex GUI instead of a few command line tools?
 - etc...
 
-Why? Those tools don't rely on /OPEN STANDARD/
 
-*REAL STORY @WORK*: github dashboard is slow & terrible for an organizer.
+*REAL STORY @WORK*: github dashboard is slow & terrible for the manager.
 
 *** Why you shouldn't rely too much on GitHub™?
 
 - Github™ is great to get you started:
   - nothing to install
   - only high level interface
-  - everythin well explained
+  - everything explained with nice docs
   - github is really a great product
-- The hidden price to pay:
+- *The hidden price to pay*:
   - use closed source services
   - give freely many private infos
   - you must TRUST github for privacy, private account
 
-*** We should do our best not to rely on any central product
+*** Why not self hosted Gitlab then?
 
-- self host? Gitlab-ee, Gitlab-ce, => HUGE WARN TO UPDATE, fix a security bug
-  but also add a bunch of new features (anti-features?)
-- meta data hosted in DB
-- if another use clone your repo, it doesn't get all metas of your project:
+Gitlab is a better alternative but:
 
-*** =git clone= misses
+- You still keep the metas of your project in the Gitlab server in some DB.
+- You still force all the member of your team to use your Gitlab version, with
+  your Gitlab plugins, with your Gitlab settings, etc...
+- Gitlab push a big warn so you are pushed to upgrade (new features & anti-features)
+
+*** =git clone=
 
 - [X] code
 
@@ -130,8 +132,61 @@ Why? Those tools don't rely on /OPEN STANDARD/
 - [ ] *hooks*
 - [ ] *web pages*
 
-** Decentralized Web
+* Git Project Manager
+*** Problems
 
+- can't clone everything
+- big dependence on private tooling (that could change or being interrupted)
+- force same tooling choices accross your team members
+
+*** Solution
+
+- put metas in git branches
+  *CLONE ALL THE THINGS!!!!*
+. . .
+- use text files for everything
+  *DO NOT FORCE ANY TOOL*
+. . .
+- only rely on conventions, better on standardized conventions
+  *HELP TO WRITE SPECIFIC OPEN SOURCE TOOLS*
+
+*** Git Project Manager =gpm=
+
+- command line tool
+- integrate your project management metas in your git repo
+- automate a few common tasks
+- follow a few conventions
+
+
+/Tool freedom/
+
+- people on the team don't need to install or use =gpm=
+- they just need to follow a minimal set of conventions
+- want to use other conventions? Write yourself a =gpm= in a few hours.
+- but really there are /very few/ conventions =gpm= follows
+
+*** =gpm= conventions
+
+- =git= as DCSV
+- text files
+- Project Management metas goes in the branch =gpm=
+
+*** Encouraged but not enforced =gpm= conventions
+
+- encourage to use =org-mode= format but you can change
+- issues goes in =issues.org= file
+- reviews goes in =reviews/= with name =<branch>-<reviewer>.org=
+- docs goes in =wiki.org=
+- serve goes in your XDG data dir (standard)
+
+*** git is already batteries included
+
+- =git= hooks
+- =git instaweb=
+- =git daemon=
+
+* Conclusion
+** Decentralized Web
 *** Decentralized Authentication: IndieAuth
 
 - one of your online identities = one domaine name
@@ -161,36 +216,3 @@ Follow:
 
 - https://indiewebify.me
 - https://indieweb.org
-
-* Git Project Manager
-*** Problems
-
-- can't clone everything
-- big dependence on private tooling (that could change or being interrupted)
-- force same tooling choices accross your team members
-
-*** Solutions
-
-- put metas in git branches
-- use text files for everything
-- rely more on open source tools, formats and conventions
-
-*** Git Project Manager =gpm=
-
-=gpm= is a command line tool that is mainly a set of simples git commands to remember.
-
-- most command could have been git aliases
-- use some standards to help
-- you can do a =gpm= for yourself and your team in few hours
-- you don't enfoce =gpm= to your other member
-- =gpm= just enforce a set of conventions + automate few common tasks
-
-*** =gpm= conventions
-
-- =git= of course
-- =org-mode=
-- git project management metas goes in the branch =gpm=
-- issues goes in =issues.org= file
-- reviews goes in =reviews/= with name =<branch>-<reviewer>.org=
-- docs goes in =wiki.org=
-- serve goes in your XDG data dir
