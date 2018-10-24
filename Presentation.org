@@ -204,6 +204,182 @@ battery included:
 
 * DEMO
 
+*** Create a git project
+
+#+BEGIN_SRC bash
+mkdir -p /tmp/gpm-playground/testprj
+cd /tmp/gpm-playground/testprj
+echo "Hello GPM" > README
+git init .
+git add README
+git commit -m "Initial commit"
+#+END_SRC
+
+#+RESULTS:
+Initialized empty Git repository in /private/tmp/gpm-playground/testprj/.git/
+[master (root-commit) 617f661] Initial commit
+1 file changed, 1 insertion(+)
+create mode 100644 README
+
+*** =gpm init= (1)
+
+#+BEGIN_SRC bash
+gpm init
+#+END_SRC
+
+#+BEGIN_SRC
+GPM -- Git Project Manager
+==========================
+Create a new branch gpm (be sure the branch gpm doesn't already exists)
+    git checkout --orphan gpm
+Switched to a new branch 'gpm'
+cleanup the branch
+    git rm --cached -r .
+    git clean -fd
+#+END_SRC
+
+*** =gpm init= (2)
+
+#+BEGIN_SRC
+* issue.org
+    git add issues.org
+    git add templates
+* wiki.org
+    git add wiki.org
+* reviews.org
+    create some example review for inspiration
+      reviews/write-contributing-yogsototh.org
+    git add reviews
+    create some review templates
+      templates/new-review.org
+    git add templates
+#+END_SRC
+
+*** =gpm init= (3)
+
+#+BEGIN_SRC
+* hooks/
+    Copyings default hooks into the hooks directory
+    git add hooks
+* server init
+create dir: /Users/yaesposi/.local/share/gpm/public
+    git init .
+    git rev-parse --show-toplevel
+    git rev-parse --show-toplevel
+    git clone --mirror /tmp/gpm-playground/testprj
+               ~/.local/share/gpm/public/testprj.git
+Cloning into bare repository '.../testprj.git'...
+done.
+    git update-server-info
+    git commit -m 'gpm initialized'
+    git checkout master
+Switched to branch 'master'
+#+END_SRC
+*** The =gpm= branch
+
+#+BEGIN_SRC
+> git checktout gpm
+> tree
+.
+├── hooks
+│   ├── applypatch-msg.sample
+│   ├── commit-msg.sample
+│   └── ...
+├── issues.org
+├── reviews
+│   └── write-contributing-yogsototh.org
+├── templates
+│   ├── new-issue.org
+│   └── new-review.org
+└── wiki.org
+
+3 directories, 16 files
+#+END_SRC
+
+*** Hooks
+
+#+BEGIN_SRC bash
+> gpm hooks
+Usage: gpm hooks sync
+  Handle hooks for this git repository
+
+Available options:
+  -h,--help                Show this help text
+
+Available commands:
+  sync                     Synchronize hooks from gpm branch
+#+END_SRC
+
+*** =issues.org= Basic
+
+#+BEGIN_SRC org
+#+TODO: TODO(t) STARTED(s) WAITING(w) | DONE(d) CANCELLED(c)
+
+* Basic Usages
+** TODO Do thing 3
+** STARTED Do thing 2
+** DONE Do thing 1
+#+END_SRC
+
+*** =issues.org= Complex workflow, review
+
+#+BEGIN_SRC org
+#+PROPERTY: ASSIGNEE
+#+PROPERTY: REVIEWER
+#+TODO: REVIEW(i) | MERGED(m)
+#+TODO: ACCEPTED(a) CHANGE_REQUESTED(c) QUESTION(q) FEEDBACK(f) | REFUSED(r)
+
+** REVIEW Basic review process
+   :PROPERTIES:
+   :BRANCH:   explain-review-process
+   :ASSIGNEE: yogsototh
+   :END:
+
+*** ACCEPTED Review finished
+    :PROPERTIES:
+    :REVIEWER: shubby
+    :END:
+#+END_SRC
+
+*** =issues.org= Full Professional Usage
+
+#+BEGIN_SRC org
+#+TAGS: epic(e) user_story(u) task(t) qa(q) ops(o)
+
+* Some Title                                                           :epic:
+** Some User Story                                                    :story:
+*** Dev Task                                                       :task:dev:
+*** Document Task                                                  :task:doc:
+*** QA Task                                                         :task:qa:
+*** Ops Task                                                       :task:ops:
+#+END_SRC
+*** =gpm new-issue=
+
+#+BEGIN_SRC bash
+> gpm new-issue -i
+#+END_SRC
+
+*** =gpm serve=
+
+- web interface: =git instaweb= (port 1234)
+- git server: =git daemon= (port 9418)
+
+#+BEGIN_SRC
+Usage: gpm serve (start | stop | update | path)
+  Serve the git to the web
+
+Available options:
+  -h,--help                Show this help text
+
+Available commands:
+  start                    Start to serve all gpm tracked repositories
+  stop                     Stop to serve all gpm tracked repositories
+  update                   Update the served git repository
+  path                     Show the path of the bare repository
+#+END_SRC
+
+*** =gpm review=
+
 * Conclusion
 *** Proof of concept
 
