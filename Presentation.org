@@ -1,0 +1,196 @@
+#+Title: Git Project Manager / Commission Open Source
+#+Author: Yann Esposito
+#+Date: <2018-10-25 Thu>
+
+** =git= is a *Distributed* Concurrent Versions System
+
+** GitHub is a *Centralized* =git= host
+* Can we do without Github™?
+*** Betteridge's law
+
+Betteridge's law of headlines is an adage that states:
+
+#+BEGIN_QUOTE
+Any headline that ends in a question mark  
+can be answered by the word no.
+#+END_QUOTE
+
+. . .
+
+Here the answer is *YES*!
+
+- Linux (only mail)
+- GHC used a self hosted instance of phabricator + trac
+- many others I don't know
+
+*** All right, we can, but /should we/?
+
+#+BEGIN_SRC
+__   _______ ____  _
+\ \ / / ____/ ___|| |
+ \ V /|  _| \___ \| |
+  | | | |___ ___) |_|
+  |_| |_____|____/(_)
+#+END_SRC
+
+** GitHub™
+*** GitHub™: Social Network
+
+  - user management & trust
+  - discoverability
+
+*** GitHub™: its free!
+
+#+BEGIN_QUOTE
+If you're not paying for it,  
+you're the product being sold.
+#+END_QUOTE
+
+$$: Pay for private repositories
+
+*** GitHub™: Features!!!
+
+From their website (in that order):
+
+  - /Code Review/: comment diffs, approve, refuse, etc...
+  - /Project Management/: issues, milestones, dashboard, etc...
+  - /Integrations/: travis, slack, etc...
+  - /Team Management/: access rights, community guidelines, etc...
+  - /Social Coding/: follow, explore, share, etc...
+  - /Documentation/: github pages, wiki, ...à
+  - /Code Hosting/: all your code in one place, tree view, blame view, etc...
+
+***  GitHub™: Metas
+
+Most GitHub™ features put data in their own internal closed representation:
+
+- Issues
+- Comments
+- Pages
+- Pull Request & review
+- Wiki
+
+Note there are tools to export them.
+Ex: migrate to Gitlab
+
+*** GitHub™ is great today but can suck tomorrow
+
+- /bloatware/
+  remember digg, readitlater? think about the latest reddit design?
+- /payware/
+  You rely on our feature, but now, we want you to move or to pay. Fair ;)
+- /crapware/
+  Nothing works as expected unless you pay: Twitter streaming API?
+- /dieware/
+  Remember Friendfeed? Google Reader™?
+- etc...
+
+*** GitHub™ force all your team member to use GitHub™
+
+Were you already forced to:
+
+- use PowerPoint? Excel? Word?
+- code in PHP? in Java?
+- work on windows? Harder need to ssh to UNIX machines?
+- use notepad instead of vim?
+- use Eclipse instead of emacs?
+- etc...
+
+Why? Those tools don't rely on /OPEN STANDARD/
+
+*REAL STORY @WORK*: github dashboard is slow & terrible for an organizer.
+
+*** Why you shouldn't rely too much on GitHub™?
+
+- Github™ is great to get you started:
+  - nothing to install
+  - only high level interface
+  - everythin well explained
+  - github is really a great product
+- The hidden price to pay:
+  - use closed source services
+  - give freely many private infos
+  - you must TRUST github for privacy, private account
+
+*** We should do our best not to rely on any central product
+
+- self host? Gitlab-ee, Gitlab-ce, => HUGE WARN TO UPDATE, fix a security bug
+  but also add a bunch of new features (anti-features?)
+- meta data hosted in DB
+- if another use clone your repo, it doesn't get all metas of your project:
+
+*** =git clone= misses
+
+- [X] code
+
+- [ ] *issues*
+- [ ] *reviews*
+- [ ] *comments*
+- [ ] *wiki/doc*
+- [ ] *hooks*
+- [ ] *web pages*
+
+** Decentralized Web
+
+*** Decentralized Authentication: IndieAuth
+
+- one of your online identities = one domaine name
+- serve a page with all your online identity providers and username
+  - google
+  - twitter
+  - etc...
+  - but also your GPG keys (see keybase)
+
+Mainly you OWN & CONTROLE your identity and the informations about it.
+
+*** Decentralized Comments: Webmention
+
+- you host your comment
+- a 3rd party website can decide to show it in its comment section
+
+*** Dentralized Web
+
+- Your content is yours (prevent site death, change it, delete it...)
+- Better connection:
+  - messages can go to all your services
+  - use open standards
+- You are in control
+  - post anything, any format, no monitoring, share links.
+
+Follow:
+
+- https://indiewebify.me
+- https://indieweb.org
+
+* Git Project Manager
+*** Problems
+
+- can't clone everything
+- big dependence on private tooling (that could change or being interrupted)
+- force same tooling choices accross your team members
+
+*** Solutions
+
+- put metas in git branches
+- use text files for everything
+- rely more on open source tools, formats and conventions
+
+*** Git Project Manager =gpm=
+
+=gpm= is a command line tool that is mainly a set of simples git commands to remember.
+
+- most command could have been git aliases
+- use some standards to help
+- you can do a =gpm= for yourself and your team in few hours
+- you don't enfoce =gpm= to your other member
+- =gpm= just enforce a set of conventions + automate few common tasks
+
+*** =gpm= conventions
+
+- =git= of course
+- =org-mode=
+- git project management metas goes in the branch =gpm=
+- issues goes in =issues.org= file
+- reviews goes in =reviews/= with name =<branch>-<reviewer>.org=
+- docs goes in =wiki.org=
+- serve goes in your XDG data dir
