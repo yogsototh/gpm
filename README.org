@@ -1,6 +1,8 @@
 #+Title: Git Project Manager
 #+Author: Yann Esposito
 
+Main repository URL is: https://gitlab.esy.fun/yogsototh/gpm
+
 *Principle: put project management info along the repository not in some DB.*
 
 Clone the project, get the code, but also the issues, the doc, the webpage,
