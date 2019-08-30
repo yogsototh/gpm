@@ -32,6 +32,16 @@ __   _______ ____  _
   |_| |_____|____/(_)
 #+END_SRC
 
+*** Short History
+
+- Internet (decentralized, email, bbs, usenet, etc...)
+- P2P -> no business
+- Centralized -> business, steal data!!!!
+- Decentralized again!
+  - cryptobulshit: crash business $$$$ -> #!@*!
+  - bio blockchains: sustainable business $$
+  - old fashionned style: ???
+
 ** GitHub™
 *** GitHub™: Social Network
 
@@ -124,13 +134,13 @@ Gitlab is a better alternative but:
 *** =git clone=
 
 - [X] code
+- [X] web pages
 
 - [ ] *issues*
 - [ ] *reviews*
 - [ ] *comments*
 - [ ] *wiki/doc*
 - [ ] *hooks*
-- [ ] *web pages*
 
 * Git Project Manager
 *** Problems
@@ -214,12 +224,6 @@ git init .
 git add README
 git commit -m "Initial commit"
 #+END_SRC
-
-#+RESULTS:
-Initialized empty Git repository in /private/tmp/gpm-playground/testprj/.git/
-[master (root-commit) 617f661] Initial commit
-1 file changed, 1 insertion(+)
-create mode 100644 README
 
 *** =gpm init= (1)
 
@@ -378,7 +382,22 @@ Available commands:
   path                     Show the path of the bare repository
 #+END_SRC
 
-*** =gpm review=
+*** =gpm review=: classical workflow
+
+1. dev create a new feature branch
+2. reviewer review the branch
+3. dev pull the =gpm= branch and =gpm retrieve= the reviews
+4. dev take feedbacks into account
+5. goto 2 until reviewer accept the branch
+6. integration manager/dictator/lieutenant merge the branch
+
+*** =gpm review=: reviewer (step 2 of previous slide)
+
+1. reviewer pull the remote feature branch
+2. gpm review start: create a local file
+3. write the review: =org-annotate-file= FTW!
+4. stop the review: copy the local file in gpm branch and commit it
+5. =gpm update= to serve the updated =gpm= branch
 
 * Conclusion
 *** Proof of concept
@@ -390,6 +409,14 @@ Available commands:
   - vimer => spacemacs or doom-emacs
   - IDE => switch to spacemacs eat the bullet!
   - you still can edit org-mode with notepad
+*** Lot of things already done
+
+- git-scm.org has plenty of resources
+- git instaweb
+- git daemon
+- how to serve git with apaches, if you want to use another non decentralized
+  workflow, or share hosting with a few peers
+
 
 *** Going further: Decentralized Web
 
